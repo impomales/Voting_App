@@ -24,12 +24,16 @@
   "author": "Isaias Pomales",
   "license": "MIT",
   "dependencies": {
+    "babel-preset-react": "^6.16.0",
+    "babelify": "^7.3.0",
     "dotenv": "^1.2.0",
     "express": "^4.12.4",
     "express-session": "^1.11.3",
     "mongoose": "^4.1.0",
     "passport": "^0.3.0",
     "passport-facebook": "^2.1.1",
-    "passport-github": "^1.0.0"
+    "passport-github": "^1.0.0",
+    "react": "^15.3.2",
+    "react-dom": "^15.3.2"
   }
 }
