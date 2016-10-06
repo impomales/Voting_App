@@ -40,9 +40,18 @@ module.exports = function (app, passport) {
 		.get(isLoggedIn, function (req, res) {
 			res.json(req.user.github);
 		});
+		
+	app.route('/auth/facebook')
+		.get(passport.authenticate('facebook'));
 
 	app.route('/auth/github')
 		.get(passport.authenticate('github'));
+		
+	app.route('/auth/facebook/callback')
+		.get(passport.authenticate('facebook', {
+			successRedirect: '/',
+			failureRedirect: '/login'
+		}))
 
 	app.route('/auth/github/callback')
 		.get(passport.authenticate('github', {
