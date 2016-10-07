@@ -1,8 +1,10 @@
 'use strict';
 
-var path = process.cwd();
+var path = process.cwd()
+var PollHandler = require(path + '/app/controllers/pollHandler.server.js')
 
 module.exports = function (app, passport) {
+	var pollHandler = new PollHandler()
 
 	function isLoggedIn (req, res, next) {
 		if (req.isAuthenticated()) {
@@ -38,4 +40,9 @@ module.exports = function (app, passport) {
 			failureRedirect: '/login'
 		}))
 
+	app.route('/api/polls')
+		.get(pollHandler.getPolls)
+	
+	app.route('/api/:id/polls')
+		.get(pollHandler.getVoterPolls)
 };
