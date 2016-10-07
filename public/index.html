@@ -4,12 +4,22 @@
 
 	<head>
 		<title>Full Stack Voting App</title>
-		
 		<link href="/public/css/main.css" rel="stylesheet" type="text/css">
 	</head>
 
 	<body>
-		<div id='test'></div>
+		<a href='/'>voting app</a>
+		<div id='mainMenu'>
+			<ul>
+				<li>Home</li>
+				<li>My Polls</li>
+				<li>Create New Poll</li>
+				<li><a href='/logout'>Sign out</a></li>
+			</ul>
+		</div>
+		<div id='title'>Full Stack Voting Application</div>
+		<p>Below are polls hosted by fcc-voting. Select a poll to see the results and vote, or make a new poll!</p>
+		<div id='polls'></div>
 		<script src='/public/bundle.js'></script>
 	</body>
 
