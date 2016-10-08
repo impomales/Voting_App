@@ -7,7 +7,7 @@ function PollHandler() {
     // gets all polls.
     this.getPolls = function(req, res) {
         Polls
-            .find({}, {'_id': false})
+            .find({})
             .exec(function(err, result) {
                 if (err) throw new Error('failed to get all polls.')
                 

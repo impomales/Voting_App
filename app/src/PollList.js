@@ -31,13 +31,14 @@ var PollTable = React.createClass({
 })
 
 var PollList = React.createClass({
-    getinitialState: function() {
+    getInitialState: function() {
         return {polls: []}
     },
     componentDidMount: function() {
         $.ajax('/api/polls').done(function(data) {
+            console.log(data)
             this.setState({polls: data})
-        }).bind(this)
+        }.bind(this))
     },
     render: function() {
         return (
@@ -45,3 +46,5 @@ var PollList = React.createClass({
         ) 
     }
 })
+
+module.exports = PollList

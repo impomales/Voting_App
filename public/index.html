@@ -5,6 +5,12 @@
 	<head>
 		<title>Full Stack Voting App</title>
 		<link href="/public/css/main.css" rel="stylesheet" type="text/css">
+		<!-- fixes issue is facebook authentication add chars to url -->
+		<script type="text/javascript">
+    		if (window.location.hash && window.location.hash == '#_=_') {
+        		window.location.hash = '';
+    		}
+		</script>
 	</head>
 
 	<body>
