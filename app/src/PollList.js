@@ -5,9 +5,10 @@ var $ = require('jquery')
 var PollRow = React.createClass({
     render: function() {
         // need to add link to poll :id.
+        var link = '/api/polls/' + this.props.poll._id
         return (
             <tr className='pollRow'>
-                <td>{this.props.poll.title}</td>
+                <a href={link}><td>{this.props.poll.title}</td></a>
             </tr>    
         )
     }

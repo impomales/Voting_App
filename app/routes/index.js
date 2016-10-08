@@ -41,9 +41,13 @@ module.exports = function (app, passport) {
 		}))
 
 	// server side routes.
+	// all polls.
 	app.route('/api/polls')
 		.get(pollHandler.getPolls)
-	
+	// poll with :id.	
+	app.route('/api/polls/:id')
+		.get(pollHandler.getPoll)
+	// all polls created by voter :id.
 	app.route('/api/:id/polls')
 		.get(pollHandler.getVoterPolls)
 };

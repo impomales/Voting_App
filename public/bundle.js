@@ -190,13 +190,18 @@ var PollRow = React.createClass({
 
     render: function () {
         // need to add link to poll :id.
+        var link = '/api/polls/' + this.props.poll._id;
         return React.createElement(
             'tr',
             { className: 'pollRow' },
             React.createElement(
-                'td',
-                null,
-                this.props.poll.title
+                'a',
+                { href: link },
+                React.createElement(
+                    'td',
+                    null,
+                    this.props.poll.title
+                )
             )
         );
     }
@@ -228,7 +233,6 @@ var PollList = React.createClass({
         return { polls: [] };
     },
     componentDidMount: function () {
-        console.log('hello?');
         $.ajax('/api/polls').done(function (data) {
             console.log(data);
             this.setState({ polls: data });
