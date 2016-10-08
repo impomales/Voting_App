@@ -35,9 +35,13 @@ var PollList = React.createClass({
         return {polls: []}
     },
     componentDidMount: function() {
-        
+        $.ajax('/api/polls').done(function(data) {
+            this.setState({polls: data})
+        }).bind(this)
     },
     render: function() {
-        return
+        return (
+            <PollTable polls={this.state.polls}/>
+        ) 
     }
 })
