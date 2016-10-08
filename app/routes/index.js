@@ -30,7 +30,7 @@ module.exports = function (app, passport) {
 			res.redirect('/login');
 		});
 
-	
+	// authentication.
 	app.route('/auth/facebook')
 		.get(passport.authenticate('facebook'));
 		
@@ -40,6 +40,7 @@ module.exports = function (app, passport) {
 			failureRedirect: '/login'
 		}))
 
+	// server side routes.
 	app.route('/api/polls')
 		.get(pollHandler.getPolls)
 	
