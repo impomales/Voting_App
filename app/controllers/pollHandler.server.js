@@ -28,7 +28,7 @@ function PollHandler() {
     // gets polls with :id.
     this.getPoll = function(req, res) {
         Polls
-            .find({'_id': req.params.id})
+            .findOne({'_id': req.params.id})
             .exec(function(err, result) {
                 if (err) throw new Error('failed to get poll with id' + req.params.id)
                 res.json(result)

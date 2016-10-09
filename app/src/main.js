@@ -5,6 +5,7 @@ var Route = require('react-router').Route
 var Redirect = require('react-router').Redirect
 
 var PollList = require('./PollList')
+var Poll = require('./Poll')
 
 var NoMatch = React.createClass({
   render: function() {
@@ -18,6 +19,7 @@ ReactDOM.render(
   (
     <Router>
       <Route path='/polls' component={PollList} />
+      <Route path='/polls/:id' component={Poll} />
       <Redirect from='/' to='/polls' />
       <Route path='*' component={NoMatch} />
     </Router>

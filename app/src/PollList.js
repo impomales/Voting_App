@@ -5,10 +5,13 @@ var $ = require('jquery')
 var PollRow = React.createClass({
     render: function() {
         // need to add link to poll :id.
-        var link = '/api/polls/' + this.props.poll._id
         return (
             <tr className='pollRow'>
-                <a href={link}><td>{this.props.poll.title}</td></a>
+                <td>
+                    <a href={'#/polls/' + this.props.poll._id}>
+                        {this.props.poll.title}
+                    </a>
+                </td>
             </tr>    
         )
     }
@@ -22,7 +25,7 @@ var PollTable = React.createClass({
             )
         })
         return (
-            <table>
+            <table className='pollTable'>
                 <tbody>
                     {list}
                 </tbody>
@@ -37,7 +40,6 @@ var PollList = React.createClass({
     },
     componentDidMount: function() {
         $.ajax('/api/polls').done(function(data) {
-            console.log(data)
             this.setState({polls: data})
         }.bind(this))
     },
