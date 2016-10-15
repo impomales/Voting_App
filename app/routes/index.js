@@ -13,6 +13,8 @@ module.exports = function (app, passport) {
 			res.redirect('/login');
 		}
 	}
+	
+	// consider different isLoggedIn for when voting.
 
 	app.route('/')
 		.get(isLoggedIn, function (req, res) {
