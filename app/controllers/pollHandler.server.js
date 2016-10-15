@@ -37,6 +37,23 @@ function PollHandler() {
                 res.json(result)
             })
     }
+    
+    // create a new poll.
+    this.addPoll = function(req, res) {
+        var poll = req.body
+        Polls
+            .insertOne(poll)
+            .exec(function(err, result) {
+                if (err) throw err
+                var id = result.insertedId
+                Polls
+                    .findOne({'_id': id})
+                    .exec(function(err, doc) {
+                        if (err) throw err
+                        res.json(doc)
+                    })
+            })
+    }
 }
 
 module.exports = PollHandler

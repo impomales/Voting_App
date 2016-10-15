@@ -46,6 +46,7 @@ module.exports = function (app, passport) {
 	// all polls.
 	app.route('/api/polls')
 		.get(pollHandler.getPolls)
+		.post(pollHandler.addPoll)
 	// poll with :id.	
 	app.route('/api/polls/:id')
 		.get(pollHandler.getPoll)
