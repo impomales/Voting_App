@@ -48,6 +48,6 @@ module.exports = function (app, passport) {
 	app.route('/api/polls/:id')
 		.get(pollHandler.getPoll)
 	// all polls created by voter :id.
-	app.route('/api/:id/polls')
+	app.route('/api/myPolls')
 		.get(pollHandler.getVoterPolls)
 };

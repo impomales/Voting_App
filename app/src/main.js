@@ -4,6 +4,7 @@ var Router = require('react-router').Router
 var Route = require('react-router').Route
 var Redirect = require('react-router').Redirect
 
+var VoterPollList = require('./VoterPollList')
 var PollList = require('./PollList')
 var Poll = require('./Poll')
 
@@ -19,6 +20,7 @@ ReactDOM.render(
   (
     <Router>
       <Route path='/polls' component={PollList} />
+      <Route path='/polls/myPolls' component={VoterPollList} />
       <Route path='/polls/:id' component={Poll} />
       <Redirect from='/' to='/polls' />
       <Route path='*' component={NoMatch} />

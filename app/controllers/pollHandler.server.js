@@ -16,13 +16,16 @@ function PollHandler() {
     }
     // gets polls created by voted :id.
     this.getVoterPolls = function(req, res) {
+        if (!req.session.passport) res.json([])
+        else {
         Polls
-            .find({'createdBy': req.params.id})
+            .find({'createdBy': req.session.passport.user})
             .exec(function(err, result) {
-                if (err) throw new Error('failed to get all polls.')
+                if (err) throw new Error('failed to get voter polls.')
                 
                 res.json(result)
             })
+        }
     }
     
     // gets polls with :id.
