@@ -40,19 +40,13 @@ function PollHandler() {
     
     // create a new poll.
     this.addPoll = function(req, res) {
+        
+        // need to process poll object before adding.
+        // need req.session.passport.user to store user id.
         var poll = req.body
-        Polls
-            .insertOne(poll)
-            .exec(function(err, result) {
-                if (err) throw err
-                var id = result.insertedId
-                Polls
-                    .findOne({'_id': id})
-                    .exec(function(err, doc) {
-                        if (err) throw err
-                        res.json(doc)
-                    })
-            })
+        console.log(req)
+        console.log(req.body)
+        console.log(req.session.passport.user)
     }
 }
 

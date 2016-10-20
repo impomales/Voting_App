@@ -6,6 +6,7 @@ var Redirect = require('react-router').Redirect
 
 var VoterPollList = require('./VoterPollList')
 var PollList = require('./PollList')
+var AddPoll = require('./AddPoll')
 var Poll = require('./Poll')
 
 var NoMatch = React.createClass({
@@ -21,6 +22,7 @@ ReactDOM.render(
     <Router>
       <Route path='/polls' component={PollList} />
       <Route path='/polls/myPolls' component={VoterPollList} />
+      <Route path='/polls/addPoll' component={AddPoll} />
       <Route path='/polls/:id' component={Poll} />
       <Redirect from='/' to='/polls' />
       <Route path='*' component={NoMatch} />
