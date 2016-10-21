@@ -43,10 +43,22 @@ function PollHandler() {
         
         // need to process poll object before adding.
         // need req.session.passport.user to store user id.
-        var poll = req.body
-        console.log(req)
-        console.log(req.body)
-        console.log(req.session.passport.user)
+        // need to add poll created to user model.
+        var pollRaw = req.body
+        var optionsRaw = pollRaw.options.split(",")
+        var options = []
+        optionsRaw.forEach(function(o) {
+            options.push({title: o, count: 0})
+        })
+        var poll = new Polls({
+            title: pollRaw.title,
+            options: options,
+            createdBy: req.session.passport.user
+        })
+        poll.save(function(err, result) {
+            if (err) return err
+            res.json(result)
+        })
     }
 }
 
