@@ -284,26 +284,53 @@ var Poll = React.createClass({
     displayName: 'Poll',
 
     getInitialState: function () {
-        return {};
+        return { data: {} };
     },
     componentDidMount: function () {
         $.ajax('/api/polls/' + this.props.params.id).done(function (data) {
-            this.setState(data);
+            this.setState({ data: data });
         }.bind(this));
     },
     render: function () {
+        // need to create list of options beforehand.
+        var options = [];
+        if (this.state.data.options) {
+            console.log(this.state.data);
+            options = this.state.data.options.map(function (item, index) {
+                return React.createElement(
+                    'option',
+                    { value: item.title, key: index },
+                    item.title
+                );
+            });
+        }
         return React.createElement(
             'div',
             { className: 'poll' },
             React.createElement(
                 'p',
                 null,
-                this.state.title
+                this.state.data.title
             ),
             React.createElement(
-                'p',
-                null,
-                ' will add more to this'
+                'form',
+                { className: 'votingForm' },
+                React.createElement(
+                    'p',
+                    null,
+                    'Please choose an option'
+                ),
+                React.createElement(
+                    'select',
+                    { name: 'options' },
+                    options
+                ),
+                React.createElement('br', null),
+                React.createElement(
+                    'button',
+                    null,
+                    'Vote'
+                )
             )
         );
     }
