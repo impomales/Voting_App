@@ -2,9 +2,11 @@
 
 var path = process.cwd()
 var PollHandler = require(path + '/app/controllers/pollHandler.server.js')
+var VoterHandler = require(path + '/app/controllers/voterHandler.server.js')
 
 module.exports = function (app, passport) {
 	var pollHandler = new PollHandler()
+	var voterHandler = new VoterHandler()
 
 	function isLoggedIn (req, res, next) {
 		if (req.isAuthenticated()) {
@@ -46,11 +48,18 @@ module.exports = function (app, passport) {
 	// all polls.
 	app.route('/api/polls')
 		.get(pollHandler.getPolls)
-		.post(pollHandler.addPoll)
+		.post(isLoggedIn, pollHandler.addPoll)
 	// poll with :id.	
 	app.route('/api/polls/:id')
 		.get(pollHandler.getPoll)
 	// all polls created by voter :id.
 	app.route('/api/myPolls')
-		.get(pollHandler.getVoterPolls)
+		.get(isLoggedIn, pollHandler.getVoterPolls)
+		
+	// update voter info.
+	app.route('/api/voterAdd')
+		.put(voterHandler.addPoll)
+		
+	app.route('/api/voters')
+		.get(voterHandler.getVoters)
 };

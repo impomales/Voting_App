@@ -204,6 +204,18 @@ var AddPoll = new React.createClass({
             data: JSON.stringify(poll),
             success: function (data) {
                 console.log('poll added successfully');
+                $.ajax({
+                    url: '/api/voterAdd',
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify(data),
+                    success: function (data) {
+                        console.log('voter info updated');
+                    }.bind(this),
+                    error: function (xhr, status, err) {
+                        console.err(this.props.url, status, err.toString());
+                    }.bind(this)
+                });
             }.bind(this),
             error: function (xhr, status, err) {
                 console.error(this.props.url, status, err.toString());
@@ -319,11 +331,6 @@ var PollList = React.createClass({
         return React.createElement(
             'div',
             { className: 'PollList' },
-            React.createElement(
-                'a',
-                { href: '#/polls/myPolls' },
-                'My Polls'
-            ),
             React.createElement(PollTable, { polls: this.state.polls, title: 'All Polls' })
         );
     }
