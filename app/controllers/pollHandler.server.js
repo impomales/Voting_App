@@ -60,6 +60,21 @@ function PollHandler() {
             res.json(result)
         })
     }
+    
+    // updates count of option in poll.
+    this.vote = function(req, res) {
+        var poll = req.body.data
+        poll.options[req.body.option].count++
+        
+        Polls
+            .findOneAndUpdate(
+                {_id: poll._id},
+                {options: poll.options})
+            .exec(function(err, result) {
+                if (err) throw err
+                res.json(result)
+            })
+    }
 }
 
 module.exports = PollHandler

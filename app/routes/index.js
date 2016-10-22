@@ -59,7 +59,11 @@ module.exports = function (app, passport) {
 	// update voter info.
 	app.route('/api/voterAdd')
 		.put(voterHandler.addPoll)
-		
+	// shows list of voters (used for debugging)
 	app.route('/api/voters')
 		.get(voterHandler.getVoters)
+		
+	// vote
+	app.route('/api/vote')
+		.put(pollHandler.vote)
 };
