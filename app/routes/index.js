@@ -66,4 +66,8 @@ module.exports = function (app, passport) {
 	// vote
 	app.route('/api/vote')
 		.put(pollHandler.vote)
+		
+	// delete poll
+	app.route('/api/deletePoll')
+		.delete(isLoggedIn, pollHandler.deletePoll)
 };
