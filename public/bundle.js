@@ -410,6 +410,11 @@ var PollRow = React.createClass({
                     'a',
                     { href: '#/polls/' + this.props.poll._id },
                     this.props.poll.title
+                ),
+                React.createElement(
+                    'button',
+                    null,
+                    'Delete'
                 )
             )
         );

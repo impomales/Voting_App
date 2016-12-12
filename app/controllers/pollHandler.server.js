@@ -75,6 +75,13 @@ function PollHandler() {
                 res.json(result)
             })
     }
+    
+    // deletes poll.
+    this.deletePoll = function(req, res) {
+        var poll = req.body.data
+        Polls 
+            .remove({_id: poll._id})
+    }
 }
 
 module.exports = PollHandler
