@@ -1,9 +1,7 @@
 var express = require('express');
 var app = express();
 
-app.get('/', function(req, res) {
-	res.send('Hello...');
-});
+app.use(express.static('client'));
 
 var port = process.env.PORT || 3000;
 
