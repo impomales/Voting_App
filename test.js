@@ -6,7 +6,7 @@ describe('Voting App', function() {
 	var app; 
 	var server;
 	var port;
-	const URL_ROOT = 'localhost:' + (process.env.PORT || 3000);
+	const URL_ROOT = 'http://localhost:' + (process.env.PORT || 3000);
 
 	before(function() {
 		app = express();
@@ -19,7 +19,9 @@ describe('Voting App', function() {
 	});
 
 	it('successfully connects to server', function(done) {
-		assert.ok(server);
-		done();
+		superagent.get(URL_ROOT + '/index.html', function(err, res) {
+			assert.ifError();
+			done();
+		});
 	});
 });
