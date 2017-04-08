@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
-var userSchema = require('./schemas/user');
-var pollSchema = require('./schemas/poll');
+var userSchema = require('../schemas/user');
+var pollSchema = require('../schemas/poll');
 
 mongoose.connect('mongodb://localhost:27017/test');
 
