@@ -1,7 +1,6 @@
 var assert = require('assert');
 var express = require('express');
 var superagent = require('superagent');
-var mongoose = require('mongoose');
 var models = require('./models/models');
 
 describe('Voting App', function() {
