@@ -43,9 +43,37 @@ module.exports = function() {
 	};
 
 	this.addPoll = function(req, res) {
-		// define.
-		res.end();
-	};
+		// add poll to database.
+		if (!req.user) {
+			return res.
+				status(status.UNAUTHORIZED).
+				json({ error: 'Not logged in.' });
+		}
+
+		var pollRaw = req.body;
+		var choicesRaw = pollRaw.choices.split(',');
+		var choices = [];
+
+		choicesRaw.forEach(function(o) {
+			choices.push({title: o, count: 0});
+		});
+
+		var poll = {
+			title: pollRaw.title,
+			choices: choices,
+			created_by: req.user._id
+		}
+
+		Poll.create(poll, function(err, result) {
+			if (err) {
+				return res.
+					status(status.INTERNAL_SERVER_ERROR).
+					json({ error: err.toString() });
+			}
+
+			console.log('poll successfully saved.');
+		});
+	}
 
 	this.getPollById = function(req, res) {
 		Poll.
@@ -98,6 +126,8 @@ module.exports = function() {
 						status(status.INTERNAL_SERVER_ERROR).
 						json({error: err.toString() });
 					}
+
+					console.log('poll successfully deleted.');
 				});
 			});
 	};
