@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 var userSchema = {
 	username: {
 		type: String,
-		require: true,
+		require: true
 	},
 	data: {
 		oauth: {type: String, required: true},
@@ -11,6 +11,10 @@ var userSchema = {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: 'Poll'
 		}]
+	},
+	isAuth: {
+		type: Boolean,
+		require: true
 	}
 };
 
