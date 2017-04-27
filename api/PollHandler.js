@@ -4,6 +4,8 @@ var status = require('http-status');
 module.exports = function() {
 	this.getMyPolls = function(req, res) {
 		// polls created by current user.
+		// req.user might be defined even when logged in
+		// depending on how I handle checking IP.
 		if (!req.user) {
 			return res.
 				status(status.UNAUTHORIZED).
@@ -50,6 +52,17 @@ module.exports = function() {
 				json({ error: 'Not logged in.' });
 		}
 
+		/* object sent from client side.
+			{
+				title: {
+					type: String
+				},
+				choices: {
+					type: String // comma, seperated
+				}
+			}
+		*/
+
 		var pollRaw = req.body;
 		var choicesRaw = pollRaw.choices.split(',');
 		var choices = [];
@@ -72,6 +85,9 @@ module.exports = function() {
 			}
 
 			console.log('poll successfully saved.');
+			var json = {};
+			json['newPoll'] = result;
+			res.json(json);
 		});
 	}
 
@@ -120,7 +136,7 @@ module.exports = function() {
 						json({ error: 'unauthorized to delete this poll.' })
 				}
 
-				Poll.remove({ _id: req.params.id }, function(err) {
+				Poll.remove({ _id: req.params.id }, function(err, removed) {
 					if (err) {
 						return res.
 						status(status.INTERNAL_SERVER_ERROR).
@@ -128,17 +144,51 @@ module.exports = function() {
 					}
 
 					console.log('poll successfully deleted.');
+					var json = {};
+					json['removed'] = removed;
+					res.json(json);
 				});
 			});
 	};
 
 	this.addChoice = function(req, res) {
 		// define.
+		// must be logged in. 
 		res.end();
 	};
 
 	this.vote = function(req, res) {
-		// define.
-		res.end();
+		// cannot double vote. (haven't handled that yet).
+		// if user not logged in, store user as an IP.
+
+		/*	object from client side.
+			{
+				choice: {
+					type: Number
+				},
+				choices: [
+					{title: String, count: Number}
+				]
+			}
+		*/
+		var vote = req.body;
+		vote.choices[choice].count++;
+
+		Poll.
+			findByIdAndUpdate(
+				req.params.id, 
+				{choices: vote.choices},
+				{new: true}).
+			exec(function(err, result) {
+				if (err) {
+					res.status(status.INTERNAL_SERVER_ERROR).
+					json.send({ error: err.toString() });
+				}
+
+				console.log('successfully voted');
+				var json = {};
+				json['vote'] = result;
+				res.json(json);
+			})
 	};
 };
