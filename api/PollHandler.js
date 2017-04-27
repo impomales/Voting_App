@@ -1,4 +1,5 @@
 var Poll = require('../models/models').Poll;
+var User = require('../models/models').User;
 var status = require('http-status');
 
 module.exports = function() {
@@ -152,9 +153,45 @@ module.exports = function() {
 	};
 
 	this.addChoice = function(req, res) {
-		// define.
 		// must be logged in. 
-		res.end();
+		if (!req.user) {
+			res.
+				status(status.UNAUTHORIZED).
+				json({ error: 'Not logged in.' });
+		}
+
+		/* object from client side.
+			{
+				title: {
+					type: String
+				},
+				choices: [
+					{title: String, count: Number}
+				]
+			}
+		*/
+
+		var vote = req.body;
+		vote.choices.push({title: vote.title, count: 1});
+
+		// refactor as a static function for addChoice() and vote().
+		Poll.
+			findByIdAndUpdate(
+				req.params.id, 
+				{choices: vote.choices},
+				{new: true}).
+			exec(function(err, result) {
+				if (err) {
+					res.status(status.INTERNAL_SERVER_ERROR).
+					json.send({ error: err.toString() });
+				}
+
+				console.log('successfully voted');
+				// need to update user. 
+				var json = {};
+				json['vote'] = result;
+				res.json(json);
+			});
 	};
 
 	this.vote = function(req, res) {
@@ -186,9 +223,10 @@ module.exports = function() {
 				}
 
 				console.log('successfully voted');
+				// need to update user. 
 				var json = {};
 				json['vote'] = result;
 				res.json(json);
-			})
+			});
 	};
 };
