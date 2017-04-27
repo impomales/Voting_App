@@ -11,10 +11,6 @@ var userSchema = {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: 'Poll'
 		}]
-	},
-	isAuth: {
-		type: Boolean,
-		require: true
 	}
 };
 

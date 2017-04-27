@@ -5,9 +5,9 @@ var status = require('http-status');
 module.exports = function() {
 	this.getMyPolls = function(req, res) {
 		// polls created by current user.
-		// req.user might be defined even when logged in
+		// req.user.data.oauth is invalid when not logged in.
 		// depending on how I handle checking IP.
-		if (!req.user) {
+		if (req.user.data.oauth === 'invalid') {
 			return res.
 				status(status.UNAUTHORIZED).
 				json({ error: 'Not logged in.' });
@@ -47,7 +47,7 @@ module.exports = function() {
 
 	this.addPoll = function(req, res) {
 		// add poll to database.
-		if (!req.user) {
+		if (req.user.data.oauth === 'invalid') {
 			return res.
 				status(status.UNAUTHORIZED).
 				json({ error: 'Not logged in.' });
@@ -116,7 +116,7 @@ module.exports = function() {
 
 	this.deletePoll = function(req, res) {
 		// only can delete polls created by current user.
-		if (!req.user) {
+		if (req.user.data.oauth === 'invalid') {
 			return res.
 				status(status.UNAUTHORIZED).
 				json({ error: 'Not logged in.' });
@@ -154,7 +154,7 @@ module.exports = function() {
 
 	this.addChoice = function(req, res) {
 		// must be logged in. 
-		if (!req.user) {
+		if (req.user.data.oauth === 'invalid') {
 			res.
 				status(status.UNAUTHORIZED).
 				json({ error: 'Not logged in.' });
@@ -195,7 +195,7 @@ module.exports = function() {
 	};
 
 	this.vote = function(req, res) {
-		// cannot double vote. (haven't handled that yet).
+		// shouldn't be allowed to double vote. (haven't handled that yet).
 		// if user not logged in, store user as an IP.
 
 		/*	object from client side.
