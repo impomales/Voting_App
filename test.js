@@ -3,7 +3,7 @@ var express = require('express');
 var superagent = require('superagent');
 var models = require('./models/models');
 var routes = require('./routes/routes');
-// figure a general to clean database between tests.
+var ip = require('ip');
 
 describe('Voting App', function() {
 	var app; 
@@ -19,29 +19,36 @@ describe('Voting App', function() {
 		routes(app);
 		server = app.listen(port);
 
-		var exampleUser = {
-			username: 'impomales',
-			data: {
-				oauth: 'invalid',
-				voted: []
+		var exampleUsers = [
+			{
+				username: 'impomales',
+				data: {
+					oauth: 'valid',
+					voted: []
+				}
+			},
+			{
+				username: ip.address(),
+				data: {
+					oauth: 'invalid',
+					voted: []
+				}
 			}
-		};
+		];
 
-		User.create(exampleUser, function(err, user) {
+		User.create(exampleUsers, function(err, users) {
 			assert.ifError(err);
 		});
 	});
 
-
-	afterEach(function() {
-		// clean out database.
-		Poll.remove({}, function(err) {
-			assert.ifError(err);
-		})
-	});
-
 	after(function() {
-		server.close();
+		User.remove({}, function(err) {
+			assert.ifError(err);
+			Poll.remove({}, function(err) {
+				assert.ifError(err);
+				server.close();
+			});
+		});
 	});
 
 	it('successfully connects to server', function(done) {
@@ -52,6 +59,12 @@ describe('Voting App', function() {
 	});
 
 	describe('Mongoose', function() {
+		after(function() {
+			Poll.remove({}, function(err) {
+				assert.ifError(err);
+			})
+		});
+
 		it('retrieve a user', function(done) {
 			User.findOne({}, function(err, res) {
 				assert.ifError(err);
@@ -105,6 +118,20 @@ describe('Voting App', function() {
 			Poll.create(examplePolls, function(err, result) {
 				assert.ifError(err);
 			});
+
+			app.use(function(req, res, next) {
+				User.findOne({ username: 'impomales' }, function(err, user) {
+					assert.ifError(err);
+					req.user = user;
+					next();
+				});
+			});
+		});
+
+		after(function() {
+			Poll.remove({}, function(err) {
+				assert.ifError(err);
+			});
 		});
 
 		it('can get all polls in polls database', function(done) {
@@ -123,6 +150,68 @@ describe('Voting App', function() {
 				assert.ok(result.polls[0].choices);
 				assert.ok(result.polls[1].title);
 				assert.ok(result.polls[1].choices);
+				done();
+			});
+		});
+
+		it('can get all of current user\'s polls', function(done) {
+			// define.
+			done();
+		});
+
+		it('can add a new user poll', function(done) {
+			//define.
+			done();
+		});
+
+		it('can get a poll by id', function(done) {
+			// define.
+			done();
+		});
+
+		it('can delete a user poll', function(done) {
+			// define.
+			done();
+		});
+
+		it('can vote as an authenticated user', function(done) {
+			// define.
+			done();
+		});
+
+		it('can vote with a new user choice', function(done) {
+			// define.
+			done();
+		});
+
+		describe('unauth', function() {
+			before(function() {
+				app.use(function(req, res, next) {
+					User.findOne({ username: ip.address() }, function(err, user) {
+						assert.ifError(err);
+						req.user = user;
+						next();
+					});
+				});
+			});
+
+			it('cannot view user polls', function(done) {
+				// define.
+				done();
+			});
+
+			it('cannot add a user poll', function(done) {
+				// define.
+				done();
+			});
+
+			it('cannot delete a user poll', function(done) {
+				// define.
+				done();
+			});
+
+			it('can vote as an unauthenticated user', function(done) {
+				// define.
 				done();
 			});
 		});
