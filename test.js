@@ -12,42 +12,29 @@ describe('Voting App', function() {
 	const URL_ROOT = 'http://localhost:' + (process.env.PORT || 3000);
 	var User = models.User;
 	var Poll = models.Poll;
+	var user_id;
 
 	before(function() {
 		app = express();
 		port = process.env.PORT || 3000;
+
+		app.use(function(req, res, next) {
+			User.findOne({username: 'impomales'}, function(err, result) {
+				assert.ifError(err);
+				req.user = result;
+				user_id = result._id;
+				next();
+			});
+		});
+
 		routes(app);
 		server = app.listen(port);
-
-		var exampleUsers = [
-			{
-				username: 'impomales',
-				data: {
-					oauth: 'valid',
-					voted: []
-				}
-			},
-			{
-				username: ip.address(),
-				data: {
-					oauth: 'invalid',
-					voted: []
-				}
-			}
-		];
-
-		User.create(exampleUsers, function(err, users) {
-			assert.ifError(err);
-		});
 	});
 
 	after(function() {
-		User.remove({}, function(err) {
+		Poll.remove({}, function(err) {
 			assert.ifError(err);
-			Poll.remove({}, function(err) {
-				assert.ifError(err);
-				server.close();
-			});
+			server.close();
 		});
 	});
 
@@ -98,7 +85,7 @@ describe('Voting App', function() {
 			var examplePolls = [
 			{
 				title: 'Pepsi or Coke?',
-				created_by: '000000000000000000000001',
+				created_by: user_id,	// id of impomales
 				choices: [
 					{title: 'Pepsi', count: 5},
 					{title: 'Coke', count: 4}
@@ -106,25 +93,28 @@ describe('Voting App', function() {
 			},
 			{
 				title: 'Favorite Food',
-				created_by: '000000000000000000000001',
+				created_by: user_id,
 				choices: [
 					{title: 'Pizza', count: 3},
 					{title: 'Pasta', count: 5},
 					{title: 'French Fries', count: 10},
 					{title: 'Fried Chicken', count: 8}
 				]
+			},	// this one is not created by current user.
+			{
+				title: 'Countries you would like to travel to',
+				created_by: '000000000000000000000002',
+				choices: [
+					{title: 'France', count: 4},
+					{title: 'Germany', count: 3},
+					{title: 'Brazil', count: 3},
+					{title: 'Japan', count: 4},
+					{title: 'Canada', count: 5}
+				]
 			}];
 
 			Poll.create(examplePolls, function(err, result) {
 				assert.ifError(err);
-			});
-
-			app.use(function(req, res, next) {
-				User.findOne({ username: 'impomales' }, function(err, user) {
-					assert.ifError(err);
-					req.user = user;
-					next();
-				});
 			});
 		});
 
@@ -145,7 +135,7 @@ describe('Voting App', function() {
 				});
 				
 				assert.ok(result.polls);
-				assert.equal(result.polls.length, 2);
+				assert.equal(result.polls.length, 3);
 				assert.ok(result.polls[0].title);
 				assert.ok(result.polls[0].choices);
 				assert.ok(result.polls[1].title);
@@ -155,8 +145,23 @@ describe('Voting App', function() {
 		});
 
 		it('can get all of current user\'s polls', function(done) {
-			// define.
-			done();
+			var url = URL_ROOT + '/api/mypolls';
+			superagent.get(url, function(err, res) {
+				assert.ifError(err);
+				var result;
+
+				assert.doesNotThrow(function() {
+					result = JSON.parse(res.text);
+				});
+
+				assert.ok(result.myPolls);
+				assert.equal(result.myPolls.length, 2);
+				assert.ok(result.myPolls[0].title);
+				assert.ok(result.myPolls[0].choices);
+				assert.ok(result.myPolls[1].title);
+				assert.ok(result.myPolls[1].choices);
+				done();
+			});
 		});
 
 		it('can add a new user poll', function(done) {
@@ -186,13 +191,6 @@ describe('Voting App', function() {
 
 		describe('unauth', function() {
 			before(function() {
-				app.use(function(req, res, next) {
-					User.findOne({ username: ip.address() }, function(err, user) {
-						assert.ifError(err);
-						req.user = user;
-						next();
-					});
-				});
 			});
 
 			it('cannot view user polls', function(done) {
