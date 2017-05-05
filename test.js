@@ -1,5 +1,6 @@
 var assert = require('assert');
 var express = require('express');
+var bodyparser = require('body-parser');
 var superagent = require('superagent');
 var models = require('./models/models');
 var routes = require('./routes/routes');
@@ -17,6 +18,9 @@ describe('Voting App', function() {
 	before(function() {
 		app = express();
 		port = process.env.PORT || 3000;
+
+		app.use(bodyparser.json());
+
 
 		app.use(function(req, res, next) {
 			User.findOne({username: 'impomales'}, function(err, result) {
@@ -166,11 +170,47 @@ describe('Voting App', function() {
 
 		it('can add a new user poll', function(done) {
 			//define.
-			done();
+			var newPoll = {
+				title: 'Drink of Choice',
+				choices: 'Beer,Wine,Whiskey,Vodka,Tequila'
+			};
+
+			var url = URL_ROOT + '/api/polls';
+
+			superagent.
+				post(url).
+				send(newPoll).
+				end(function(err, result) {
+					assert.ifError(err);
+
+					var jsonNewPoll;
+
+					assert.doesNotThrow(function() {
+						json = JSON.parse(result.text);
+					})
+
+					assert.ok(json.newPoll);
+					assert.ok(json.newPoll.title);
+					assert.ok(json.newPoll.choices);
+					assert.ok(json.newPoll.choices[0].title);
+					assert.equal(json.newPoll.choices[0].count, 0);
+
+					superagent.get(url, function(err, res) {
+						assert.ifError(err);
+						var json;
+
+						assert.doesNotThrow(function() {
+							json = JSON.parse(res.text);
+						});
+
+						assert.ok(json.polls);
+						assert.equal(json.polls.length, 4);
+						done();
+					});
+				});
 		});
 
 		it('can get a poll by id', function(done) {
-			// define.
 			Poll.findOne({title: 'Pepsi or Coke?'}, function(err, result) {
 				assert.ifError(err);
 				var url = URL_ROOT + '/api/polls/' + result._id;
