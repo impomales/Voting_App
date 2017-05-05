@@ -171,7 +171,22 @@ describe('Voting App', function() {
 
 		it('can get a poll by id', function(done) {
 			// define.
-			done();
+			Poll.findOne({title: 'Pepsi or Coke?'}, function(err, result) {
+				assert.ifError(err);
+				var url = URL_ROOT + '/api/polls/' + result._id;
+				superagent.get(url, function(err, res) {
+					assert.ifError(err);
+
+					var json;
+					assert.doesNotThrow(function() {
+						json = JSON.parse(res.text);
+					});
+
+					assert.ok(json.poll);
+					assert.equal(result._id, json.poll._id)
+					done();
+				});
+			});
 		});
 
 		it('can delete a user poll', function(done) {
