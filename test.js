@@ -240,7 +240,21 @@ describe('Voting App', function() {
 					end(function(err, result) {
 						assert.ifError(err);
 
-						done();
+						url = URL_ROOT + '/api/polls';
+
+						superagent.
+							get(url, function(err, results) {
+								assert.ifError(err);
+
+								var json;
+								assert.doesNotThrow(function() {
+									json = JSON.parse(results.text);
+								})
+
+								assert.ok(json.polls);
+								assert.equal(json.polls.length, 3);
+								done();
+							});
 				});
 			});
 		});

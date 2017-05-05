@@ -123,7 +123,7 @@ module.exports = function() {
 		}
 
 		Poll.
-			find({ _id: req.params.id }).
+			findOne({ _id: req.params.id }).
 			exec(function(err, result) {
 				if (err) {
 					return res.
@@ -131,7 +131,9 @@ module.exports = function() {
 						json({ error: err.toString() });
 				}
 
-				if (result.created_by !== req.user._id) {
+				
+
+				if (String(result.created_by) !== String(req.user._id)) {
 					return res.
 						status(status.UNAUTHORIZED).
 						json({ error: 'unauthorized to delete this poll.' })
