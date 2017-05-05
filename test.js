@@ -169,7 +169,6 @@ describe('Voting App', function() {
 		});
 
 		it('can add a new user poll', function(done) {
-			//define.
 			var newPoll = {
 				title: 'Drink of Choice',
 				choices: 'Beer,Wine,Whiskey,Vodka,Tequila'
@@ -231,7 +230,19 @@ describe('Voting App', function() {
 
 		it('can delete a user poll', function(done) {
 			// define.
-			done();
+			Poll.findOne({title: 'Drink of Choice'}, function(err, deleted) {
+				assert.ifError(err);
+
+				var url = URL_ROOT + '/api/polls/' + deleted._id;
+
+				superagent.
+					del(url).
+					end(function(err, result) {
+						assert.ifError(err);
+
+						done();
+				});
+			});
 		});
 
 		it('can vote as an authenticated user', function(done) {
