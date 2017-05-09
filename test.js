@@ -23,7 +23,7 @@ describe('Voting App - auth', function() {
 
 
 		app.use(function(req, res, next) {
-			User.findOne({username: 'impomales'}, function(err, result) {
+			User.findOne({username: 'Isaias Pomales'}, function(err, result) {
 				assert.ifError(err);
 				req.user = result;
 				user_id = result._id;
@@ -57,9 +57,9 @@ describe('Voting App - auth', function() {
 		});
 
 		it('retrieve a user', function(done) {
-			User.findOne({}, function(err, res) {
+			User.findOne({username: 'Isaias Pomales'}, function(err, res) {
 				assert.ifError(err);
-				assert.equal(res.username, 'impomales');
+				assert.equal(res.username, 'Isaias Pomales');
 				done();
 			});
 		});

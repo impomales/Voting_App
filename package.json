@@ -30,6 +30,6 @@
     "http-status": "^1.0.1",
     "mongoose": "^4.9.3",
     "passport": "^0.3.2",
-    "passport-twitter": "^1.0.4"
+    "passport-google-oauth": "^1.0.0"
   }
 }
