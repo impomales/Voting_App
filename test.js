@@ -260,8 +260,38 @@ describe('Voting App', function() {
 		});
 
 		it('can vote as an authenticated user', function(done) {
-			// define.
-			done();
+			Poll.
+				findOne({ title: 'Pepsi or Coke?' }, function(err, result) {
+					assert.ifError(err);
+
+					assert.ok(result.choices[0].count);
+
+					var id = result._id;
+					var count = result.choices[0].count;
+
+					var url = URL_ROOT + '/api/vote/' + id;
+
+					var vote = {
+						choice: 0,
+						choices: result.choices
+					}
+
+					superagent.
+						put(url).
+						send(vote).
+						end(function(err, result) {
+							assert.ifError(err);
+
+							var json;
+
+							assert.doesNotThrow(function() {
+								json = JSON.parse(result.text);
+							});
+
+							assert.equal(json.vote.choices[0].count, count + 1);
+							done();
+						});
+				});
 		});
 
 		it('can vote with a new user choice', function(done) {

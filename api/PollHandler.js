@@ -211,7 +211,7 @@ module.exports = function() {
 			}
 		*/
 		var vote = req.body;
-		vote.choices[choice].count++;
+		vote.choices[vote.choice].count++;
 
 		Poll.
 			findByIdAndUpdate(
