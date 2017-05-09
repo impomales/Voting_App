@@ -6,7 +6,7 @@ var models = require('./models/models');
 var routes = require('./routes/routes');
 var ip = require('ip');
 
-describe('Voting App', function() {
+describe('Voting App - auth', function() {
 	var app; 
 	var server;
 	var port;
@@ -295,32 +295,37 @@ describe('Voting App', function() {
 		});
 
 		it('can vote with a new user choice', function(done) {
-			// define.
-			done();
-		});
+			Poll.findOne({ title: 'Favorite Food' }, function(err, result) {
+				assert.ifError(err);
 
-		describe('unauth', function() {
-			before(function() {
-			});
+				var id = result._id;
 
-			it('cannot view user polls', function(done) {
-				// define.
-				done();
-			});
+				var length = result.choices.length;
 
-			it('cannot add a user poll', function(done) {
-				// define.
-				done();
-			});
+				var url = URL_ROOT + '/api/choice/' + id;
 
-			it('cannot delete a user poll', function(done) {
-				// define.
-				done();
-			});
+				var vote = {
+					title: 'Chips and Guac',
+					choices: result.choices
+				}
 
-			it('can vote as an unauthenticated user', function(done) {
-				// define.
-				done();
+				superagent.
+					put(url).
+					send(vote).
+					end(function(err, result) {
+						assert.ifError(err);
+
+						var json;
+
+						assert.doesNotThrow(function() {
+							json = JSON.parse(result.text);
+						});
+
+						assert.equal(json.vote.choices.length, length + 1);
+						assert.equal(json.vote.choices[length].title, 'Chips and Guac');
+						assert.equal(json.vote.choices[length].count, 1);
+						done();
+					});
 			});
 		});
 	});
