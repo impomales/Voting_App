@@ -7,7 +7,7 @@ module.exports = function() {
 		// polls created by current user.
 		// req.user.data.oauth is invalid when not logged in.
 		// depending on how I handle checking IP.
-		if (req.user.data.oauth === 'invalid') {
+		if (!req.user) {
 			return res.
 				status(status.UNAUTHORIZED).
 				json({ error: 'Not logged in.' });
@@ -47,7 +47,7 @@ module.exports = function() {
 
 	this.addPoll = function(req, res) {
 		// add poll to database.
-		if (req.user.data.oauth === 'invalid') {
+		if (!req.user) {
 			return res.
 				status(status.UNAUTHORIZED).
 				json({ error: 'Not logged in.' });
@@ -116,7 +116,7 @@ module.exports = function() {
 
 	this.deletePoll = function(req, res) {
 		// only can delete polls created by current user.
-		if (req.user.data.oauth === 'invalid') {
+		if (!req.user) {
 			return res.
 				status(status.UNAUTHORIZED).
 				json({ error: 'Not logged in.' });
@@ -156,7 +156,7 @@ module.exports = function() {
 
 	this.addChoice = function(req, res) {
 		// must be logged in. 
-		if (req.user.data.oauth === 'invalid') {
+		if (!req.user) {
 			res.
 				status(status.UNAUTHORIZED).
 				json({ error: 'Not logged in.' });
