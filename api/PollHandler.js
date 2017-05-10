@@ -5,8 +5,6 @@ var status = require('http-status');
 module.exports = function() {
 	this.getMyPolls = function(req, res) {
 		// polls created by current user.
-		// req.user.data.oauth is invalid when not logged in.
-		// depending on how I handle checking IP.
 		if (!req.user) {
 			return res.
 				status(status.UNAUTHORIZED).
@@ -177,23 +175,42 @@ module.exports = function() {
 		vote.choices.push({title: vote.title, count: 1});
 
 		// refactor as a static function for addChoice() and vote().
-		Poll.
-			findByIdAndUpdate(
-				req.params.id, 
-				{choices: vote.choices},
-				{new: true}).
-			exec(function(err, result) {
-				if (err) {
-					res.status(status.INTERNAL_SERVER_ERROR).
-					json.send({ error: err.toString() });
-				}
+		User.findById(req.user._id, function(err, user) {
+			if (err) {
+				res.status(status.INTERNAL_SERVER_ERROR).
+				json.send({error: err.toString()});
+			}
 
-				console.log('successfully voted');
-				// need to update user. 
-				var json = {};
-				json['vote'] = result;
-				res.json(json);
+			// check if poll was voted by user.
+			user.data.voted.forEach(function(item) {
+				if (item.toString() === req.params.id) {
+					res.status(status.UNAUTHORIZED).
+					json.send({error: 'cannot vote on poll more than once'});
+				};
 			});
+
+			Poll.
+				findByIdAndUpdate(
+					req.params.id, 
+					{choices: vote.choices},
+					{new: true}).
+				exec(function(err, result) {
+					if (err) {
+						res.status(status.INTERNAL_SERVER_ERROR).
+						json.send({ error: err.toString() });
+					}
+
+					console.log('successfully voted');
+					// need to update user. 
+					user.data.voted.push(result._id);
+					user.save(function(err, update) {
+					});
+					var json = {};
+					json['vote'] = result;
+					res.json(json);
+				});
+		});
+		
 	};
 
 	this.vote = function(req, res) {
@@ -213,22 +230,40 @@ module.exports = function() {
 		var vote = req.body;
 		vote.choices[vote.choice].count++;
 
-		Poll.
-			findByIdAndUpdate(
-				req.params.id, 
-				{choices: vote.choices},
-				{new: true}).
-			exec(function(err, result) {
-				if (err) {
-					res.status(status.INTERNAL_SERVER_ERROR).
-					json.send({ error: err.toString() });
-				}
+		User.findById(req.user._id, function(err, user) {
+			if (err) {
+				res.status(status.INTERNAL_SERVER_ERROR).
+				json.send({error: err.toString()});
+			}
 
-				console.log('successfully voted');
-				// need to update user. 
-				var json = {};
-				json['vote'] = result;
-				res.json(json);
+			// check if poll was voted by user.
+			user.data.voted.forEach(function(item) {
+				if (item.toString === req.params.id) {
+					res.status(status.UNAUTHORIZED).
+					json.send({error: 'cannot vote on poll more than once'});
+				};
 			});
+
+			Poll.
+				findByIdAndUpdate(
+					req.params.id, 
+					{choices: vote.choices},
+					{new: true}).
+				exec(function(err, result) {
+					if (err) {
+						res.status(status.INTERNAL_SERVER_ERROR).
+						json.send({ error: err.toString() });
+					}
+
+					console.log('successfully voted');
+					// need to update user. 
+					user.data.voted.push(result._id);
+					user.save(function(err, update) {
+					});
+					var json = {};
+					json['vote'] = result;
+					res.json(json);
+				});
+		});
 	};
 };
