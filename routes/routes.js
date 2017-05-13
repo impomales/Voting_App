@@ -8,24 +8,21 @@ module.exports = function(app) {
 		if (req.isAuthenticated()) {
 			return next();
 		} else {
-			res.redirect('/login');
+			res.redirect('/');
 		}
-	}
+	};
 
-	app.route('/')
-		.get(isLoggedIn, function(req, res) {
-			res.sendFile(path + '/client/index.html');
-		});
-
-	app.route('/login')
+	// null if not logged in.
+	app.route('/api/user')
 		.get(function(req, res) {
-			res.sendFile(path + '/client/login.html');
+			if (req.user) res.json({user: req.user});
+			else res.json({user: null})
 		});
 
 	app.route('/logout')
 		.get(function(req, res) {
 			req.logout();
-			res.redirect('/login');
+			res.redirect('/');
 		});
 
 	// get polls of current user.
