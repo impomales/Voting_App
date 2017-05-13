@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {BrowserRouter as Router, Route, Link, Switch, Redirect} from 'react-router-dom';
+import $ from 'jquery';
 
 function NoMatch() {
 	return <h2>No Match Found For This Route.</h2>
@@ -14,9 +15,10 @@ function GuestMenu() {
 	);
 };
 
-function UserMenu() {
+function UserMenu(props) {
 	return (
 		<div>
+			<h3>Welcome, {props.user.username}</h3>
 			<Link to='/mypolls'>My Polls</Link>
 			<Link to='/newpoll'>New Poll</Link>
 			<a href='/logout'>Sign out</a>
@@ -25,18 +27,32 @@ function UserMenu() {
 };
 
 function Menu(props) {
-	if (props.isLoggedIn) return <UserMenu />
+	if (props.user) return <UserMenu user={props.user} />
 	return <GuestMenu />
 };
 
-function Header() {
-	return (
-		<div id='header'>
-			<h1>Voting App</h1>
-			<a href='/'>Home</a>
-			<Menu isLoggedIn={true}/>
-		</div>
-	);
+class Header extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {user: null};
+	}
+
+	componentDidMount() {
+		$.ajax('/api/user').done(function(data) {
+			console.log('data: ' + data);
+			this.setState({user: data.user});
+		}.bind(this));
+	}
+
+	render() {
+		return (
+			<div id='header'>
+				<h1><a href='/'>Voting App</a></h1>
+				<a href='/'>Home</a>
+				<Menu user={this.state.user}/>
+			</div>
+		);
+	}
 };
 
 function NewPoll() {
