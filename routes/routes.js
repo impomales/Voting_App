@@ -16,7 +16,7 @@ module.exports = function(app) {
 	app.route('/api/user')
 		.get(function(req, res) {
 			if (req.user) res.json({user: req.user});
-			else res.json({user: null})
+			else res.json({user: null});
 		});
 
 	app.route('/logout')
@@ -44,4 +44,9 @@ module.exports = function(app) {
 
 	app.route('/api/vote/:id')
 		.put(pollHandler.vote);				//unauth
+
+	app.route('/*')
+		.get(function(req, res) {
+			res.redirect('/');
+		})
 };

@@ -94,7 +94,6 @@ var Header = function (_React$Component) {
 		key: 'componentDidMount',
 		value: function componentDidMount() {
 			_jquery2.default.ajax('/api/user').done(function (data) {
-				console.log('data: ' + data);
 				this.setState({ user: data.user });
 			}.bind(this));
 		}
@@ -145,6 +144,18 @@ function Poll(props) {
 	);
 };
 
+function PollRow(props) {
+	return _react2.default.createElement(
+		'tr',
+		null,
+		_react2.default.createElement(
+			'td',
+			null,
+			props.title
+		)
+	);
+}
+
 function MyPolls() {
 	return _react2.default.createElement(
 		'h2',
@@ -153,13 +164,47 @@ function MyPolls() {
 	);
 };
 
-function Polls() {
-	return _react2.default.createElement(
-		'h2',
-		null,
-		'Polls'
-	);
-};
+var Polls = function (_React$Component2) {
+	_inherits(Polls, _React$Component2);
+
+	function Polls(props) {
+		_classCallCheck(this, Polls);
+
+		var _this2 = _possibleConstructorReturn(this, (Polls.__proto__ || Object.getPrototypeOf(Polls)).call(this, props));
+
+		_this2.state = { polls: [] };
+		return _this2;
+	}
+
+	_createClass(Polls, [{
+		key: 'componentDidMount',
+		value: function componentDidMount() {
+			_jquery2.default.ajax('/api/polls').done(function (data) {
+				this.setState({ polls: data.polls });
+			}.bind(this));
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+			var polls = this.state.polls.map(function (item) {
+				return _react2.default.createElement(PollRow, { key: item._id, title: item.title });
+			});
+			return _react2.default.createElement(
+				'table',
+				null,
+				_react2.default.createElement(
+					'tbody',
+					null,
+					polls
+				)
+			);
+		}
+	}]);
+
+	return Polls;
+}(_react2.default.Component);
+
+;
 
 function App() {
 	return _react2.default.createElement(

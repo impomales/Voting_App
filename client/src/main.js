@@ -39,7 +39,6 @@ class Header extends React.Component {
 
 	componentDidMount() {
 		$.ajax('/api/user').done(function(data) {
-			console.log('data: ' + data);
 			this.setState({user: data.user});
 		}.bind(this));
 	}
@@ -63,12 +62,40 @@ function Poll(props) {
 	return <h2>Poll {props.match.params.id}</h2>
 };
 
+function PollRow(props) {
+	return (
+		<tr>
+			<td>{props.title}</td>
+		</tr>
+	);
+}
+
 function MyPolls() {
 	return <h2>My Polls</h2>
 };
 
-function Polls() {
-	return <h2>Polls</h2>
+class Polls extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {polls: []};
+	}
+
+	componentDidMount() {
+		$.ajax('/api/polls').done(function(data) {
+			this.setState({polls: data.polls});
+		}.bind(this));
+	}
+
+	render() {
+		var polls = this.state.polls.map(function(item) {
+			return <PollRow key={item._id} title={item.title} />
+		});
+		return (
+			<table>
+				<tbody>{polls}</tbody>
+			</table>
+		);
+	}
 };
 
 function App() {
