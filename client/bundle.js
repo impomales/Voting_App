@@ -127,13 +127,81 @@ var Header = function (_React$Component) {
 
 ;
 
-function NewPoll() {
-	return _react2.default.createElement(
-		'h2',
-		null,
-		'New Poll'
-	);
-};
+var NewPoll = function (_React$Component2) {
+	_inherits(NewPoll, _React$Component2);
+
+	function NewPoll(props) {
+		_classCallCheck(this, NewPoll);
+
+		var _this2 = _possibleConstructorReturn(this, (NewPoll.__proto__ || Object.getPrototypeOf(NewPoll)).call(this, props));
+
+		_this2.state = { title: '', choices: '' };
+
+		_this2.handleTitleChange = _this2.handleTitleChange.bind(_this2);
+		_this2.handleChoicesChange = _this2.handleChoicesChange.bind(_this2);
+		_this2.handleSubmit = _this2.handleSubmit.bind(_this2);
+		return _this2;
+	}
+
+	_createClass(NewPoll, [{
+		key: 'handleTitleChange',
+		value: function handleTitleChange(e) {
+			this.setState({ title: e.target.value });
+		}
+	}, {
+		key: 'handleChoicesChange',
+		value: function handleChoicesChange(e) {
+			this.setState({ choices: e.target.value });
+		}
+	}, {
+		key: 'handleSubmit',
+		value: function handleSubmit(e) {
+			e.preventDefault();
+			var poll = this.state;
+			_jquery2.default.ajax({
+				url: '/api/polls',
+				type: 'POST',
+				contentType: 'application/json',
+				data: JSON.stringify(poll),
+				success: function (data) {
+					console.log('poll successfully added');
+					console.log(data);
+				}.bind(this),
+				failure: function (xhr, status, err) {
+					console.err(this.props.url, err.toString());
+				}.bind(this),
+				complete: function (xhr, status) {
+					this.setState({ title: '', choices: '' });
+				}.bind(this)
+			});
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+			return _react2.default.createElement(
+				'form',
+				{ onSubmit: this.handleSubmit },
+				_react2.default.createElement(
+					'label',
+					null,
+					'Title:',
+					_react2.default.createElement('input', { type: 'text', value: this.state.title, onChange: this.handleTitleChange })
+				),
+				_react2.default.createElement(
+					'label',
+					null,
+					'Options (seperated by commas):',
+					_react2.default.createElement('textarea', { value: this.state.value, onChange: this.handleChoicesChange })
+				),
+				_react2.default.createElement('input', { type: 'submit', value: 'Add Poll' })
+			);
+		}
+	}]);
+
+	return NewPoll;
+}(_react2.default.Component);
+
+;
 
 function Poll(props) {
 	return _react2.default.createElement(
@@ -161,16 +229,16 @@ function PollRow(props) {
 	);
 }
 
-var MyPolls = function (_React$Component2) {
-	_inherits(MyPolls, _React$Component2);
+var MyPolls = function (_React$Component3) {
+	_inherits(MyPolls, _React$Component3);
 
 	function MyPolls(props) {
 		_classCallCheck(this, MyPolls);
 
-		var _this2 = _possibleConstructorReturn(this, (MyPolls.__proto__ || Object.getPrototypeOf(MyPolls)).call(this, props));
+		var _this3 = _possibleConstructorReturn(this, (MyPolls.__proto__ || Object.getPrototypeOf(MyPolls)).call(this, props));
 
-		_this2.state = { myPolls: [] };
-		return _this2;
+		_this3.state = { myPolls: [] };
+		return _this3;
 	}
 
 	_createClass(MyPolls, [{
@@ -203,16 +271,16 @@ var MyPolls = function (_React$Component2) {
 
 ;
 
-var Polls = function (_React$Component3) {
-	_inherits(Polls, _React$Component3);
+var Polls = function (_React$Component4) {
+	_inherits(Polls, _React$Component4);
 
 	function Polls(props) {
 		_classCallCheck(this, Polls);
 
-		var _this3 = _possibleConstructorReturn(this, (Polls.__proto__ || Object.getPrototypeOf(Polls)).call(this, props));
+		var _this4 = _possibleConstructorReturn(this, (Polls.__proto__ || Object.getPrototypeOf(Polls)).call(this, props));
 
-		_this3.state = { polls: [] };
-		return _this3;
+		_this4.state = { polls: [] };
+		return _this4;
 	}
 
 	_createClass(Polls, [{

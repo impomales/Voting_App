@@ -39,12 +39,14 @@ module.exports = function(app) {
 		.get(pollHandler.getPollById)		//unauth
 		.delete(isLoggedIn, pollHandler.deletePoll);	//auth
 
+	// vote with a newly added choice.
 	app.route('/api/choice/:id')
 		.put(isLoggedIn, pollHandler.addChoice);		//auth
 
 	app.route('/api/vote/:id')
 		.put(pollHandler.vote);				//unauth
 
+	// all other routes redirect to home.
 	app.route('/*')
 		.get(function(req, res) {
 			res.redirect('/');

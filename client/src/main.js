@@ -54,8 +54,60 @@ class Header extends React.Component {
 	}
 };
 
-function NewPoll() {
-	return <h2>New Poll</h2>
+class NewPoll extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {title: '', choices: ''};
+
+		this.handleTitleChange = this.handleTitleChange.bind(this);
+		this.handleChoicesChange = this.handleChoicesChange.bind(this);
+		this.handleSubmit = this.handleSubmit.bind(this);
+	}
+
+	handleTitleChange(e) {
+		this.setState({title: e.target.value});
+	}
+
+	handleChoicesChange(e) {
+		this.setState({choices: e.target.value});
+	}
+
+	handleSubmit(e) {
+		e.preventDefault();
+		var poll = this.state;
+		$.ajax({
+			url: '/api/polls',
+			type: 'POST',
+			contentType: 'application/json',
+			data: JSON.stringify(poll),
+			success: function(data) {
+				console.log('poll successfully added');
+				console.log(data);
+			}.bind(this),
+			failure: function(xhr, status, err) {
+				console.err(this.props.url, err.toString())
+			}.bind(this),
+			complete: function(xhr, status) {
+				this.setState({title: '', choices: ''});
+			}.bind(this)
+		});
+	}
+
+	render() {
+		return (
+			<form onSubmit={this.handleSubmit}>
+				<label>
+					Title: 
+					<input type='text' value={this.state.title} onChange={this.handleTitleChange} />
+				</label>
+				<label>
+					Options (seperated by commas):
+					<textarea value={this.state.value} onChange={this.handleChoicesChange}></textarea>
+				</label>
+				<input type='submit' value='Add Poll' />
+			</form>
+		);
+	}
 };
 
 function Poll(props) {
