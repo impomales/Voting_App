@@ -145,35 +145,74 @@ function Poll(props) {
 };
 
 function PollRow(props) {
+	var link = '/polls/' + props.id;
 	return _react2.default.createElement(
 		'tr',
 		null,
 		_react2.default.createElement(
 			'td',
 			null,
-			props.title
+			_react2.default.createElement(
+				_reactRouterDom.Link,
+				{ to: link },
+				props.title
+			)
 		)
 	);
 }
 
-function MyPolls() {
-	return _react2.default.createElement(
-		'h2',
-		null,
-		'My Polls'
-	);
-};
+var MyPolls = function (_React$Component2) {
+	_inherits(MyPolls, _React$Component2);
 
-var Polls = function (_React$Component2) {
-	_inherits(Polls, _React$Component2);
+	function MyPolls(props) {
+		_classCallCheck(this, MyPolls);
+
+		var _this2 = _possibleConstructorReturn(this, (MyPolls.__proto__ || Object.getPrototypeOf(MyPolls)).call(this, props));
+
+		_this2.state = { myPolls: [] };
+		return _this2;
+	}
+
+	_createClass(MyPolls, [{
+		key: 'componentDidMount',
+		value: function componentDidMount() {
+			_jquery2.default.ajax('/api/mypolls').done(function (data) {
+				this.setState({ myPolls: data.myPolls });
+			}.bind(this));
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+			var myPolls = this.state.myPolls.map(function (item) {
+				return _react2.default.createElement(PollRow, { key: item._id, id: item._id, title: item.title });
+			});
+			return _react2.default.createElement(
+				'table',
+				null,
+				_react2.default.createElement(
+					'tbody',
+					null,
+					myPolls
+				)
+			);
+		}
+	}]);
+
+	return MyPolls;
+}(_react2.default.Component);
+
+;
+
+var Polls = function (_React$Component3) {
+	_inherits(Polls, _React$Component3);
 
 	function Polls(props) {
 		_classCallCheck(this, Polls);
 
-		var _this2 = _possibleConstructorReturn(this, (Polls.__proto__ || Object.getPrototypeOf(Polls)).call(this, props));
+		var _this3 = _possibleConstructorReturn(this, (Polls.__proto__ || Object.getPrototypeOf(Polls)).call(this, props));
 
-		_this2.state = { polls: [] };
-		return _this2;
+		_this3.state = { polls: [] };
+		return _this3;
 	}
 
 	_createClass(Polls, [{
@@ -187,7 +226,7 @@ var Polls = function (_React$Component2) {
 		key: 'render',
 		value: function render() {
 			var polls = this.state.polls.map(function (item) {
-				return _react2.default.createElement(PollRow, { key: item._id, title: item.title });
+				return _react2.default.createElement(PollRow, { key: item._id, id: item._id, title: item.title });
 			});
 			return _react2.default.createElement(
 				'table',

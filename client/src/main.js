@@ -63,15 +63,36 @@ function Poll(props) {
 };
 
 function PollRow(props) {
+	var link = '/polls/' + props.id;
 	return (
 		<tr>
-			<td>{props.title}</td>
+			<td><Link to={link}>{props.title}</Link></td>
 		</tr>
 	);
 }
 
-function MyPolls() {
-	return <h2>My Polls</h2>
+class MyPolls extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {myPolls: []};
+	}
+
+	componentDidMount() {
+		$.ajax('/api/mypolls').done(function(data) {
+			this.setState({myPolls: data.myPolls});
+		}.bind(this));
+	}
+
+	render() {
+		var myPolls = this.state.myPolls.map(function(item) {
+			return <PollRow key={item._id} id={item._id} title={item.title} />
+		});
+		return (
+			<table>
+				<tbody>{myPolls}</tbody>
+			</table>
+		);
+	}
 };
 
 class Polls extends React.Component {
@@ -88,7 +109,7 @@ class Polls extends React.Component {
 
 	render() {
 		var polls = this.state.polls.map(function(item) {
-			return <PollRow key={item._id} title={item.title} />
+			return <PollRow key={item._id} id={item._id} title={item.title} />
 		});
 		return (
 			<table>
