@@ -203,14 +203,52 @@ var NewPoll = function (_React$Component2) {
 
 ;
 
-function Poll(props) {
-	return _react2.default.createElement(
-		'h2',
-		null,
-		'Poll ',
-		props.match.params.id
-	);
-};
+function Vote(props) {}
+
+function Result(props) {}
+
+function Delete(props) {}
+
+var Poll = function (_React$Component3) {
+	_inherits(Poll, _React$Component3);
+
+	function Poll(props) {
+		_classCallCheck(this, Poll);
+
+		var _this3 = _possibleConstructorReturn(this, (Poll.__proto__ || Object.getPrototypeOf(Poll)).call(this, props));
+
+		_this3.state = { poll: null, user: null };
+		return _this3;
+	}
+
+	_createClass(Poll, [{
+		key: 'componentDidMount',
+		value: function componentDidMount() {
+			_jquery2.default.ajax('/api/user').done(function (data) {
+				this.setState({ user: data.user });
+				_jquery2.default.ajax('/api/polls/' + this.props.match.params.id).done(function (poll) {
+					this.setState({ poll: poll.poll });
+				}.bind(this));
+			}.bind(this));
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+			console.log(this.state.poll);
+			console.log(this.state.user);
+			return _react2.default.createElement(
+				'h2',
+				null,
+				'Poll ',
+				this.props.match.params.id
+			);
+		}
+	}]);
+
+	return Poll;
+}(_react2.default.Component);
+
+;
 
 function PollRow(props) {
 	var link = '/polls/' + props.id;
@@ -229,16 +267,16 @@ function PollRow(props) {
 	);
 }
 
-var MyPolls = function (_React$Component3) {
-	_inherits(MyPolls, _React$Component3);
+var MyPolls = function (_React$Component4) {
+	_inherits(MyPolls, _React$Component4);
 
 	function MyPolls(props) {
 		_classCallCheck(this, MyPolls);
 
-		var _this3 = _possibleConstructorReturn(this, (MyPolls.__proto__ || Object.getPrototypeOf(MyPolls)).call(this, props));
+		var _this4 = _possibleConstructorReturn(this, (MyPolls.__proto__ || Object.getPrototypeOf(MyPolls)).call(this, props));
 
-		_this3.state = { myPolls: [] };
-		return _this3;
+		_this4.state = { myPolls: [] };
+		return _this4;
 	}
 
 	_createClass(MyPolls, [{
@@ -271,16 +309,16 @@ var MyPolls = function (_React$Component3) {
 
 ;
 
-var Polls = function (_React$Component4) {
-	_inherits(Polls, _React$Component4);
+var Polls = function (_React$Component5) {
+	_inherits(Polls, _React$Component5);
 
 	function Polls(props) {
 		_classCallCheck(this, Polls);
 
-		var _this4 = _possibleConstructorReturn(this, (Polls.__proto__ || Object.getPrototypeOf(Polls)).call(this, props));
+		var _this5 = _possibleConstructorReturn(this, (Polls.__proto__ || Object.getPrototypeOf(Polls)).call(this, props));
 
-		_this4.state = { polls: [] };
-		return _this4;
+		_this5.state = { polls: [] };
+		return _this5;
 	}
 
 	_createClass(Polls, [{

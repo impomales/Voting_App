@@ -110,8 +110,44 @@ class NewPoll extends React.Component {
 	}
 };
 
-function Poll(props) {
-	return <h2>Poll {props.match.params.id}</h2>
+function Vote(props) {
+	// must handle non logged in users on client side.
+	// logged in users are handled server side.
+}
+
+function Result(props) {
+	// temporarily show as a table,
+	// later use chart.js or google chart
+}
+
+function Delete(props) {
+	// this will just be a button and a handler.
+}
+
+class Poll extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {poll: null, user: null};
+	}
+
+	componentDidMount() {
+		$.ajax('/api/user').done(function(data) {
+			this.setState({user: data.user});
+			$.ajax('/api/polls/' + this.props.match.params.id).done(function(poll) {
+				this.setState({poll: poll.poll});
+			}.bind(this));
+		}.bind(this));
+	}
+
+	render() {
+		return (
+			<Vote poll={this.state.poll} user_id={this.state.user._id} />
+			<Result results={this.state.poll.choices} />
+			// only show delete component when user_id === poll.created_by
+			// careful comparing ids.
+			<Delete poll_id={this.state.poll._id} />
+		);
+	}
 };
 
 function PollRow(props) {
