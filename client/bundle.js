@@ -203,15 +203,119 @@ var NewPoll = function (_React$Component2) {
 
 ;
 
-function Vote(props) {
+var Vote = function (_React$Component3) {
+	_inherits(Vote, _React$Component3);
+
 	// must handle non logged in users on client side.
 	// logged in users are handled server side.
-	return _react2.default.createElement(
-		'h1',
-		null,
-		'Vote'
-	);
-}
+	function Vote(props) {
+		_classCallCheck(this, Vote);
+
+		var _this3 = _possibleConstructorReturn(this, (Vote.__proto__ || Object.getPrototypeOf(Vote)).call(this, props));
+
+		_this3.state = { choice: 0, title: '' };
+
+		_this3.handleChange = _this3.handleChange.bind(_this3);
+		_this3.handleNewChoice = _this3.handleNewChoice.bind(_this3);
+		_this3.handleSubmit = _this3.handleSubmit.bind(_this3);
+		return _this3;
+	}
+
+	_createClass(Vote, [{
+		key: 'handleChange',
+		value: function handleChange(e) {
+			this.setState({ choice: parseInt(e.target.value) });
+		}
+	}, {
+		key: 'handleNewChoice',
+		value: function handleNewChoice(e) {
+			this.setState({ title: e.target.value });
+		}
+	}, {
+		key: 'handleSubmit',
+		value: function handleSubmit(e) {
+			e.preventDefault();
+			// if count == choices_count
+			// do addNewChoice else regular vote
+			// double voting not handled yet.
+			var vote = {};
+			var url = '';
+
+			if (this.state.choice === this.props.poll.choices.length) {
+				vote = {
+					title: this.state.title,
+					choices: this.props.poll.choices
+				};
+
+				url = '/api/choice/' + this.props.poll._id;
+			} else {
+				vote = {
+					choice: this.state.choice,
+					choices: this.props.poll.choices
+				};
+
+				url = '/api/vote/' + this.props.poll._id;
+			}
+
+			_jquery2.default.ajax({
+				url: url,
+				type: 'PUT',
+				contentType: 'application/json',
+				data: JSON.stringify(vote),
+				success: function (data) {
+					console.log('vote was successful');
+				}.bind(this),
+				failure: function (xhr, status, err) {
+					console.err(this.props.url, status, err.toString());
+				}.bind(this),
+				complete: function (xhr, status) {
+					this.props.update();
+				}.bind(this)
+			});
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+			var choices = this.props.poll.choices.map(function (item, index) {
+				return _react2.default.createElement(
+					'option',
+					{ key: index, value: index },
+					item.title
+				);
+			});
+
+			var choices_count = this.props.poll.choices.length;
+
+			var newChoice = this.state.choice === choices_count ? _react2.default.createElement('input', { type: 'text', value: this.state.title, onChange: this.handleNewChoice }) : _react2.default.createElement('div', null);
+
+			return _react2.default.createElement(
+				'form',
+				{ onSubmit: this.handleSubmit },
+				_react2.default.createElement(
+					'label',
+					null,
+					'Vote here',
+					_react2.default.createElement(
+						'select',
+						{ value: this.state.choice, onChange: this.handleChange },
+						choices,
+						_react2.default.createElement(
+							'option',
+							{
+								key: choices_count,
+								value: choices_count },
+							' - Add new option -'
+						)
+					),
+					newChoice
+				),
+				_react2.default.createElement('input', { type: 'submit', value: 'Vote' })
+			);
+		}
+	}]);
+
+	return Vote;
+}(_react2.default.Component);
 
 function ResultList(props) {
 	return _react2.default.createElement(
@@ -253,22 +357,28 @@ function Delete(props) {
 	);
 }
 
-var Poll = function (_React$Component3) {
-	_inherits(Poll, _React$Component3);
+var Poll = function (_React$Component4) {
+	_inherits(Poll, _React$Component4);
 
 	function Poll(props) {
 		_classCallCheck(this, Poll);
 
-		var _this3 = _possibleConstructorReturn(this, (Poll.__proto__ || Object.getPrototypeOf(Poll)).call(this, props));
+		var _this4 = _possibleConstructorReturn(this, (Poll.__proto__ || Object.getPrototypeOf(Poll)).call(this, props));
 
-		_this3.state = { poll: null, user: null };
-		return _this3;
+		_this4.state = { poll: null, user: null };
+
+		_this4.updateResults = _this4.updateResults.bind(_this4);
+		return _this4;
 	}
 
 	_createClass(Poll, [{
 		key: 'componentDidMount',
 		value: function componentDidMount() {
-			console.log('component mounted');
+			this.updateResults();
+		}
+	}, {
+		key: 'updateResults',
+		value: function updateResults() {
 			_jquery2.default.ajax('/api/user').done(function (data) {
 				_jquery2.default.ajax('/api/polls/' + this.props.match.params.id).done(function (poll) {
 					this.setState({ poll: poll.poll, user: data.user });
@@ -283,7 +393,7 @@ var Poll = function (_React$Component3) {
 			return _react2.default.createElement(
 				'div',
 				null,
-				_react2.default.createElement(Vote, { poll: this.state.poll, user_id: this.state.user }),
+				_react2.default.createElement(Vote, { poll: this.state.poll, user_id: this.state.user, update: this.updateResults }),
 				_react2.default.createElement(Result, { results: this.state.poll.choices }),
 				_react2.default.createElement(Delete, { poll_id: this.state.poll._id })
 			);
@@ -312,16 +422,16 @@ function PollRow(props) {
 	);
 }
 
-var MyPolls = function (_React$Component4) {
-	_inherits(MyPolls, _React$Component4);
+var MyPolls = function (_React$Component5) {
+	_inherits(MyPolls, _React$Component5);
 
 	function MyPolls(props) {
 		_classCallCheck(this, MyPolls);
 
-		var _this4 = _possibleConstructorReturn(this, (MyPolls.__proto__ || Object.getPrototypeOf(MyPolls)).call(this, props));
+		var _this5 = _possibleConstructorReturn(this, (MyPolls.__proto__ || Object.getPrototypeOf(MyPolls)).call(this, props));
 
-		_this4.state = { myPolls: [] };
-		return _this4;
+		_this5.state = { myPolls: [] };
+		return _this5;
 	}
 
 	_createClass(MyPolls, [{
@@ -354,16 +464,16 @@ var MyPolls = function (_React$Component4) {
 
 ;
 
-var Polls = function (_React$Component5) {
-	_inherits(Polls, _React$Component5);
+var Polls = function (_React$Component6) {
+	_inherits(Polls, _React$Component6);
 
 	function Polls(props) {
 		_classCallCheck(this, Polls);
 
-		var _this5 = _possibleConstructorReturn(this, (Polls.__proto__ || Object.getPrototypeOf(Polls)).call(this, props));
+		var _this6 = _possibleConstructorReturn(this, (Polls.__proto__ || Object.getPrototypeOf(Polls)).call(this, props));
 
-		_this5.state = { polls: [] };
-		return _this5;
+		_this6.state = { polls: [] };
+		return _this6;
 	}
 
 	_createClass(Polls, [{

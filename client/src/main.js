@@ -110,10 +110,97 @@ class NewPoll extends React.Component {
 	}
 };
 
-function Vote(props) {
+class Vote extends React.Component {
 	// must handle non logged in users on client side.
 	// logged in users are handled server side.
-	return <h1>Vote</h1>;
+	constructor(props) {
+		super(props);
+		this.state = {choice: 0, title: ''};
+
+		this.handleChange = this.handleChange.bind(this);
+		this.handleNewChoice = this.handleNewChoice.bind(this);
+		this.handleSubmit = this.handleSubmit.bind(this);
+	}
+
+	handleChange(e) {
+		this.setState({choice: parseInt(e.target.value)})
+	}
+
+	handleNewChoice(e) {
+		this.setState({title: e.target.value});
+	}
+
+	handleSubmit(e) {
+		e.preventDefault();
+		// if count == choices_count
+		// do addNewChoice else regular vote
+		// double voting not handled yet.
+		var vote = {};
+		var url = '';
+
+		if (this.state.choice === this.props.poll.choices.length) {
+			vote = {
+				title: this.state.title,
+				choices: this.props.poll.choices
+			}
+
+			url = '/api/choice/' + this.props.poll._id;
+
+			
+		} else {
+			vote = {
+				choice: this.state.choice,
+				choices: this.props.poll.choices
+			}
+
+			url = '/api/vote/' + this.props.poll._id;
+		}
+
+		$.ajax({
+			url: url,
+			type: 'PUT',
+			contentType: 'application/json',
+			data: JSON.stringify(vote),
+			success: function(data) {
+				console.log('vote was successful');
+			}.bind(this),
+			failure: function(xhr, status, err) {
+				console.err(this.props.url, status, err.toString());
+			}.bind(this),
+			complete: function(xhr, status) {
+				this.props.update();
+			}.bind(this)
+		});
+	}
+
+	render() {
+		var choices = this.props.poll.choices.map(function(item, index) {
+			return <option key={index} value={index}>{item.title}</option>
+		});
+
+		var choices_count = this.props.poll.choices.length;
+
+		var newChoice = (this.state.choice === choices_count) ?
+				<input type='text' value={this.state.title} onChange={this.handleNewChoice}/> :
+				<div></div>;
+
+		return (
+			<form onSubmit={this.handleSubmit}>
+				<label>
+					Vote here
+					<select value={this.state.choice} onChange={this.handleChange}>
+						{choices}
+						<option 
+							key={choices_count} 
+							value={choices_count}> - Add new option - 
+						</option>
+					</select>
+					{newChoice}
+				</label>
+				<input type='submit' value='Vote' />
+			</form>
+		);
+	}
 }
 
 function ResultList(props) {
@@ -144,10 +231,15 @@ class Poll extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {poll: null, user: null};
+
+		this.updateResults = this.updateResults.bind(this);
 	}
 
 	componentDidMount() {
-		console.log('component mounted');
+		this.updateResults();		
+	}
+
+	updateResults() {
 		$.ajax('/api/user').done(function(data) {
 			$.ajax('/api/polls/' + this.props.match.params.id).done(function(poll) {
 				this.setState({poll: poll.poll, user: data.user});
@@ -160,7 +252,7 @@ class Poll extends React.Component {
 		if (!this.state.poll) return <div></div>
 		return (
 			<div>
-				<Vote poll={this.state.poll} user_id={this.state.user} />
+				<Vote poll={this.state.poll} user_id={this.state.user} update={this.updateResults}/>
 				<Result results={this.state.poll.choices} />
 				{/*only show delete component when user_id === poll.created_by
 				careful comparing ids.*/}
