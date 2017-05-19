@@ -203,11 +203,55 @@ var NewPoll = function (_React$Component2) {
 
 ;
 
-function Vote(props) {}
+function Vote(props) {
+	// must handle non logged in users on client side.
+	// logged in users are handled server side.
+	return _react2.default.createElement(
+		'h1',
+		null,
+		'Vote'
+	);
+}
 
-function Result(props) {}
+function ResultList(props) {
+	return _react2.default.createElement(
+		'tr',
+		null,
+		_react2.default.createElement(
+			'td',
+			null,
+			props.title,
+			': ',
+			props.count
+		)
+	);
+}
 
-function Delete(props) {}
+function Result(props) {
+	// temporarily show as a table,
+	// later use chart.js or google chart
+	var choices = props.results.map(function (item) {
+		return _react2.default.createElement(ResultList, { key: item._id, title: item.title, count: item.count });
+	});
+	return _react2.default.createElement(
+		'table',
+		null,
+		_react2.default.createElement(
+			'tbody',
+			null,
+			choices
+		)
+	);
+}
+
+function Delete(props) {
+	// this will just be a button and a handler.
+	return _react2.default.createElement(
+		'button',
+		null,
+		'Delete'
+	);
+}
 
 var Poll = function (_React$Component3) {
 	_inherits(Poll, _React$Component3);
@@ -224,23 +268,24 @@ var Poll = function (_React$Component3) {
 	_createClass(Poll, [{
 		key: 'componentDidMount',
 		value: function componentDidMount() {
+			console.log('component mounted');
 			_jquery2.default.ajax('/api/user').done(function (data) {
-				this.setState({ user: data.user });
 				_jquery2.default.ajax('/api/polls/' + this.props.match.params.id).done(function (poll) {
-					this.setState({ poll: poll.poll });
+					this.setState({ poll: poll.poll, user: data.user });
 				}.bind(this));
 			}.bind(this));
 		}
 	}, {
 		key: 'render',
 		value: function render() {
-			console.log(this.state.poll);
-			console.log(this.state.user);
+			// weird rendering bug going on...temporary solution.
+			if (!this.state.poll) return _react2.default.createElement('div', null);
 			return _react2.default.createElement(
-				'h2',
+				'div',
 				null,
-				'Poll ',
-				this.props.match.params.id
+				_react2.default.createElement(Vote, { poll: this.state.poll, user_id: this.state.user }),
+				_react2.default.createElement(Result, { results: this.state.poll.choices }),
+				_react2.default.createElement(Delete, { poll_id: this.state.poll._id })
 			);
 		}
 	}]);

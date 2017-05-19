@@ -113,15 +113,31 @@ class NewPoll extends React.Component {
 function Vote(props) {
 	// must handle non logged in users on client side.
 	// logged in users are handled server side.
+	return <h1>Vote</h1>;
+}
+
+function ResultList(props) {
+	return <tr><td>{props.title}: {props.count}</td></tr>
 }
 
 function Result(props) {
 	// temporarily show as a table,
 	// later use chart.js or google chart
+	var choices = props.results.map(function(item) {
+			return (
+				<ResultList key={item._id} title={item.title} count={item.count}/>
+			);
+		});
+	return (
+		<table>
+			<tbody>{choices}</tbody>
+		</table>
+	);
 }
 
 function Delete(props) {
 	// this will just be a button and a handler.
+	return <button>Delete</button>;
 }
 
 class Poll extends React.Component {
@@ -131,21 +147,25 @@ class Poll extends React.Component {
 	}
 
 	componentDidMount() {
+		console.log('component mounted');
 		$.ajax('/api/user').done(function(data) {
-			this.setState({user: data.user});
 			$.ajax('/api/polls/' + this.props.match.params.id).done(function(poll) {
-				this.setState({poll: poll.poll});
+				this.setState({poll: poll.poll, user: data.user});
 			}.bind(this));
 		}.bind(this));
 	}
 
 	render() {
+		// weird rendering bug going on...temporary solution.
+		if (!this.state.poll) return <div></div>
 		return (
-			<Vote poll={this.state.poll} user_id={this.state.user._id} />
-			<Result results={this.state.poll.choices} />
-			// only show delete component when user_id === poll.created_by
-			// careful comparing ids.
-			<Delete poll_id={this.state.poll._id} />
+			<div>
+				<Vote poll={this.state.poll} user_id={this.state.user} />
+				<Result results={this.state.poll.choices} />
+				{/*only show delete component when user_id === poll.created_by
+				careful comparing ids.*/}
+				<Delete poll_id={this.state.poll._id} />
+			</div>
 		);
 	}
 };
