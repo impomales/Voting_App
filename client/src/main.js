@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import {BrowserRouter as Router, Route, Link, Switch, Redirect} from 'react-router-dom';
 import $ from 'jquery';
 import ip from 'ip';
+import ObjectID from 'mongodb';
 
 function NoMatch() {
 	return <h2>No Match Found For This Route.</h2>
@@ -83,7 +84,7 @@ class NewPoll extends React.Component {
 			data: JSON.stringify(poll),
 			success: function(data) {
 				console.log('poll successfully added');
-				console.log(data);
+				location.reload();
 			}.bind(this),
 			failure: function(xhr, status, err) {
 				console.err(this.props.url, err.toString())
@@ -227,9 +228,34 @@ function Result(props) {
 	);
 }
 
-function Delete(props) {
-	// this will just be a button and a handler.
-	return <button>Delete</button>;
+class Delete extends React.Component {
+	constructor(props) {
+		super(props);
+
+		this.handleDelete = this.handleDelete.bind(this);
+	}
+
+	handleDelete() {
+		var url = '/api/polls/' + this.props.poll._id;
+		$.ajax({
+			url: url,
+			type: 'DELETE',
+			contentType: 'application/json',
+			success: function(data) {
+				console.log('poll successfully deleted');
+				location.reload();
+			}.bind(this),
+			failure: function(xhr, status, err) {
+				console.err(this.props.url, status, err.toString());
+			}.bind(this)
+		});
+	}
+	
+	render() {
+		var deleteButton = (this.props.user && this.props.user._id === this.props.poll.created_by)
+		? <button onClick={this.handleDelete}>Delete</button> : null;
+		return <div>{deleteButton}</div>;
+	}
 }
 
 class Poll extends React.Component {
@@ -261,7 +287,7 @@ class Poll extends React.Component {
 				<Result results={this.state.poll.choices} />
 				{/*only show delete component when user_id === poll.created_by
 				careful comparing ids.*/}
-				<Delete poll_id={this.state.poll._id} />
+				<Delete poll={this.state.poll} user={this.state.user}/>
 			</div>
 		);
 	}
