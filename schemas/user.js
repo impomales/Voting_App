@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 var userSchema = {
 	username: {
 		type: String,
-		require: true
+		required: true
 	},
 	data: {
 		oauth: {type: String, required: true},

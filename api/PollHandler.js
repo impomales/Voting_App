@@ -1,6 +1,7 @@
 var Poll = require('../models/models').Poll;
 var User = require('../models/models').User;
 var status = require('http-status');
+var ObjectID = require('mongodb').ObjectID;
 
 module.exports = function() {
 	this.getMyPolls = function(req, res) {
@@ -86,7 +87,7 @@ module.exports = function() {
 			console.log('poll successfully saved.');
 			var json = {};
 			json['newPoll'] = result;
-			res.json(json);
+			return res.json(json);
 		});
 	}
 
@@ -147,7 +148,7 @@ module.exports = function() {
 					console.log('poll successfully deleted.');
 					var json = {};
 					json['removed'] = removed;
-					res.json(json);
+					return res.json(json);
 				});
 			});
 	};
@@ -155,7 +156,8 @@ module.exports = function() {
 	this.addChoice = function(req, res) {
 		// must be logged in. 
 		if (!req.user) {
-			res.
+			console.log('no...')
+			return res.
 				status(status.UNAUTHORIZED).
 				json({ error: 'Not logged in.' });
 		}
@@ -178,16 +180,16 @@ module.exports = function() {
 		User.findById(req.user._id, function(err, user) {
 			if (err) {
 				res.status(status.INTERNAL_SERVER_ERROR).
-				json.send({error: err.toString()});
+				json({error: err.toString()});
 			}
 
 			// check if poll was voted by user.
-			user.data.voted.forEach(function(item) {
-				if (item.toString() === req.params.id) {
-					res.status(status.UNAUTHORIZED).
-					json.send({error: 'cannot vote on poll more than once'});
-				};
-			});
+			for (var i = 0; i < user.data.voted.length; i++) {
+				if (user.data.voted[i].equals(new ObjectID(req.params.id))) {
+					return res.status(status.UNAUTHORIZED).
+					json({error: 'cannot vote on poll more than once'});
+				}
+			}
 
 			Poll.
 				findByIdAndUpdate(
@@ -207,18 +209,22 @@ module.exports = function() {
 					});
 					var json = {};
 					json['vote'] = result;
-					res.json(json);
+					return res.json(json);
 				});
 		});
 		
 	};
 
+// needs some serious refactoring.
 	this.vote = function(req, res) {
 		// shouldn't be allowed to double vote. (haven't handled that yet).
 		// if user not logged in, store user as an IP.
 
 		/*	object from client side.
 			{
+				ip: {
+					type: String
+				}
 				choice: {
 					type: Number
 				},
@@ -230,40 +236,108 @@ module.exports = function() {
 		var vote = req.body;
 		vote.choices[vote.choice].count++;
 
-		User.findById(req.user._id, function(err, user) {
-			if (err) {
-				res.status(status.INTERNAL_SERVER_ERROR).
-				json.send({error: err.toString()});
-			}
+		if (req.user) {
+			User.findById(req.user._id, function(err, user) {
+				for (var i = 0; i < user.data.voted.length; i++) {
+					if (user.data.voted[i].equals(new ObjectID(req.params.id))) {
+						return res.status(status.UNAUTHORIZED).
+						json({error: 'cannot vote on poll more than once'});
+					}
+				}
 
-			// check if poll was voted by user.
-			user.data.voted.forEach(function(item) {
-				if (item.toString === req.params.id) {
-					res.status(status.UNAUTHORIZED).
-					json.send({error: 'cannot vote on poll more than once'});
-				};
+				Poll.
+					findByIdAndUpdate(
+						req.params.id, 
+						{choices: vote.choices},
+						{new: true}).
+					exec(function(err, result) {
+						if (err) {
+							res.status(status.INTERNAL_SERVER_ERROR).
+							json.send({ error: err.toString() });
+						}
+
+						console.log('successfully voted');
+						// need to update user. 
+						user.data.voted.push(result._id);
+						user.save(function(err, update) {
+						});
+						var json = {};
+						json['vote'] = result;
+						return res.json(json);
+					});
 			});
+		} else {
+			User.findOne({username: vote.ip}, function(err, user) {
+				if (!user) {
+					var nonLogged = {
+						username: vote.ip,
+						data: {
+							oauth: 'invalid',
+							voted: []
+						}
+					}
+					User.create(nonLogged, function(err, newUser) {
+						if (err) throw err;
+						
+						// need to do some refactoring.
+						for (var i = 0; i < newUser.data.voted.length; i++) {
+							if (newUser.data.voted[i].equals(new ObjectID(req.params.id))) {
+								return res.status(status.UNAUTHORIZED).
+								json({error: 'cannot vote on poll more than once'});
+							}
+						}
 
-			Poll.
-				findByIdAndUpdate(
-					req.params.id, 
-					{choices: vote.choices},
-					{new: true}).
-				exec(function(err, result) {
-					if (err) {
-						res.status(status.INTERNAL_SERVER_ERROR).
-						json.send({ error: err.toString() });
+						Poll.
+							findByIdAndUpdate(
+								req.params.id, 
+								{choices: vote.choices},
+								{new: true}).
+							exec(function(err, result) {
+								if (err) {
+									res.status(status.INTERNAL_SERVER_ERROR).
+									json.send({ error: err.toString() });
+								}
+
+								console.log('successfully voted');
+								// need to update user. 
+								newUser.data.voted.push(result._id);
+								newUser.save(function(err, update) {
+								});
+								var json = {};
+								json['vote'] = result;
+								return res.json(json);
+							});
+					});
+				} else {
+					for (var i = 0; i < user.data.voted.length; i++) {
+						if (user.data.voted[i].equals(new ObjectID(req.params.id))) {
+							return res.status(status.UNAUTHORIZED).
+							json({error: 'cannot vote on poll more than once'});
+						}
 					}
 
-					console.log('successfully voted');
-					// need to update user. 
-					user.data.voted.push(result._id);
-					user.save(function(err, update) {
-					});
-					var json = {};
-					json['vote'] = result;
-					res.json(json);
-				});
-		});
+					Poll.
+						findByIdAndUpdate(
+							req.params.id, 
+							{choices: vote.choices},
+							{new: true}).
+						exec(function(err, result) {
+							if (err) {
+								return res.status(status.INTERNAL_SERVER_ERROR).
+								json({ error: err.toString() });
+							}
+
+							console.log('successfully voted');
+							// need to update user. 
+							user.data.voted.push(result._id);
+							user.save(function(err, update) {
+							});
+							var json = {};
+							json['vote'] = result;
+							return res.json(json);
+						});
+				}
+			})
+		}
 	};
 };

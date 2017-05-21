@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {BrowserRouter as Router, Route, Link, Switch, Redirect} from 'react-router-dom';
 import $ from 'jquery';
+import ip from 'ip';
 
 function NoMatch() {
 	return <h2>No Match Found For This Route.</h2>
@@ -156,21 +157,25 @@ class Vote extends React.Component {
 			url = '/api/vote/' + this.props.poll._id;
 		}
 
-		$.ajax({
-			url: url,
-			type: 'PUT',
-			contentType: 'application/json',
-			data: JSON.stringify(vote),
-			success: function(data) {
-				console.log('vote was successful');
-			}.bind(this),
-			failure: function(xhr, status, err) {
-				console.err(this.props.url, status, err.toString());
-			}.bind(this),
-			complete: function(xhr, status) {
-				this.props.update();
-			}.bind(this)
-		});
+		$.ajax('https://api.ipify.org?format=json').done(function(data) {
+			vote.ip = data.ip;
+
+			$.ajax({
+				url: url,
+				type: 'PUT',
+				contentType: 'application/json',
+				data: JSON.stringify(vote),
+				success: function(data) {
+					console.log('vote was successful');
+				}.bind(this),
+				failure: function(xhr, status, err) {
+					console.err(this.props.url, status, err.toString());
+				}.bind(this),
+				complete: function(xhr, status) {
+					this.props.update();
+				}.bind(this)
+			});
+		}.bind(this));
 	}
 
 	render() {
@@ -180,7 +185,10 @@ class Vote extends React.Component {
 
 		var choices_count = this.props.poll.choices.length;
 
-		var newChoice = (this.state.choice === choices_count) ?
+		// add choice option shouldn't be available to non logged in users ***
+		var newOption = (this.props.user) ? <option key={choices_count} value={choices_count}> - Add new option - </option> : '';
+
+		var newChoice = ((this.state.choice === choices_count)  && this.props.user) ?
 				<input type='text' value={this.state.title} onChange={this.handleNewChoice}/> :
 				<div></div>;
 
@@ -190,10 +198,7 @@ class Vote extends React.Component {
 					Vote here
 					<select value={this.state.choice} onChange={this.handleChange}>
 						{choices}
-						<option 
-							key={choices_count} 
-							value={choices_count}> - Add new option - 
-						</option>
+						{newOption}
 					</select>
 					{newChoice}
 				</label>
@@ -252,7 +257,7 @@ class Poll extends React.Component {
 		if (!this.state.poll) return <div></div>
 		return (
 			<div>
-				<Vote poll={this.state.poll} user_id={this.state.user} update={this.updateResults}/>
+				<Vote poll={this.state.poll} user={this.state.user} update={this.updateResults}/>
 				<Result results={this.state.poll.choices} />
 				{/*only show delete component when user_id === poll.created_by
 				careful comparing ids.*/}

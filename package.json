@@ -33,6 +33,7 @@
     "express": "^4.15.2",
     "express-session": "^1.15.2",
     "http-status": "^1.0.1",
+    "ip": "^1.1.5",
     "jquery": "^3.2.1",
     "mongoose": "^4.9.3",
     "passport": "^0.3.2",
