@@ -5,11 +5,15 @@ module.exports = function(app) {
 	var pollHandler = new PollHandler();
 
 	function isLoggedIn(req, res, next) {
+		// *** comment this out and call next() when you want to run test.js
+		
 		if (req.isAuthenticated()) {
 			return next();
 		} else {
 			res.redirect('/');
 		}
+
+		//next();
 	};
 
 	// null if not logged in.

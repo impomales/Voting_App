@@ -4,10 +4,10 @@ import {BrowserRouter as Router, Route, Link, Switch, Redirect} from 'react-rout
 import $ from 'jquery';
 import ip from 'ip';
 import ObjectID from 'mongodb';
-import {Grid, Row, Col, Clearfix, 
-		Jumbotron, 
+import {Grid, Row, Col, Clearfix, PageHeader,
+		Jumbotron, ListGroup, ListGroupItem,
 		Navbar, Nav, NavItem,
-		NavDropdown, MenuItem} from 'react-bootstrap';
+		NavDropdown, MenuItem, Button} from 'react-bootstrap';
 import {LinkContainer} from 'react-router-bootstrap';
 
 function NoMatch() {
@@ -281,7 +281,7 @@ class Delete extends React.Component {
 	
 	render() {
 		var deleteButton = (this.props.user && this.props.user._id === this.props.poll.created_by)
-		? <button onClick={this.handleDelete}>Delete</button> : null;
+		? <Button bsStyle='danger' onClick={this.handleDelete}>Delete</Button> : null;
 		return <div>{deleteButton}</div>;
 	}
 }
@@ -324,9 +324,9 @@ class Poll extends React.Component {
 function PollRow(props) {
 	var link = '/polls/' + props.id;
 	return (
-		<tr>
-			<td><Link to={link}>{props.title}</Link></td>
-		</tr>
+		<LinkContainer to={link}>
+			<ListGroupItem>{props.title}</ListGroupItem>
+		</LinkContainer>
 	);
 }
 
@@ -347,9 +347,15 @@ class MyPolls extends React.Component {
 			return <PollRow key={item._id} id={item._id} title={item.title} />
 		});
 		return (
-			<table>
-				<tbody>{myPolls}</tbody>
-			</table>
+			<div className='polls-container'>
+				<PageHeader>
+					Voting App<br />
+					<small>
+						Below are the polls you created. Select a poll to see the results and vote, <Link to='/newpoll'>or make a new poll!</Link>
+					</small>
+				</PageHeader>
+				<ListGroup>{myPolls}</ListGroup>
+			</div>
 		);
 	}
 };
@@ -371,9 +377,15 @@ class Polls extends React.Component {
 			return <PollRow key={item._id} id={item._id} title={item.title} />
 		});
 		return (
-			<table>
-				<tbody>{polls}</tbody>
-			</table>
+			<div className='polls-container'>
+				<PageHeader>
+					Voting App<br />
+					<small>
+						Select a poll to see the results and vote, <Link to='/newpoll'>or make a new poll!</Link>
+					</small>
+				</PageHeader>
+				<ListGroup>{polls}</ListGroup>
+			</div>
 		);
 	}
 };

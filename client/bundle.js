@@ -414,8 +414,8 @@ var Delete = function (_React$Component4) {
 		key: 'render',
 		value: function render() {
 			var deleteButton = this.props.user && this.props.user._id === this.props.poll.created_by ? _react2.default.createElement(
-				'button',
-				{ onClick: this.handleDelete },
+				_reactBootstrap.Button,
+				{ bsStyle: 'danger', onClick: this.handleDelete },
 				'Delete'
 			) : null;
 			return _react2.default.createElement(
@@ -480,16 +480,12 @@ var Poll = function (_React$Component5) {
 function PollRow(props) {
 	var link = '/polls/' + props.id;
 	return _react2.default.createElement(
-		'tr',
-		null,
+		_reactRouterBootstrap.LinkContainer,
+		{ to: link },
 		_react2.default.createElement(
-			'td',
+			_reactBootstrap.ListGroupItem,
 			null,
-			_react2.default.createElement(
-				_reactRouterDom.Link,
-				{ to: link },
-				props.title
-			)
+			props.title
 		)
 	);
 }
@@ -520,10 +516,26 @@ var MyPolls = function (_React$Component6) {
 				return _react2.default.createElement(PollRow, { key: item._id, id: item._id, title: item.title });
 			});
 			return _react2.default.createElement(
-				'table',
-				null,
+				'div',
+				{ className: 'polls-container' },
 				_react2.default.createElement(
-					'tbody',
+					_reactBootstrap.PageHeader,
+					null,
+					'Voting App',
+					_react2.default.createElement('br', null),
+					_react2.default.createElement(
+						'small',
+						null,
+						'Below are the polls you created. Select a poll to see the results and vote, ',
+						_react2.default.createElement(
+							_reactRouterDom.Link,
+							{ to: '/newpoll' },
+							'or make a new poll!'
+						)
+					)
+				),
+				_react2.default.createElement(
+					_reactBootstrap.ListGroup,
 					null,
 					myPolls
 				)
@@ -562,10 +574,26 @@ var Polls = function (_React$Component7) {
 				return _react2.default.createElement(PollRow, { key: item._id, id: item._id, title: item.title });
 			});
 			return _react2.default.createElement(
-				'table',
-				null,
+				'div',
+				{ className: 'polls-container' },
 				_react2.default.createElement(
-					'tbody',
+					_reactBootstrap.PageHeader,
+					null,
+					'Voting App',
+					_react2.default.createElement('br', null),
+					_react2.default.createElement(
+						'small',
+						null,
+						'Select a poll to see the results and vote, ',
+						_react2.default.createElement(
+							_reactRouterDom.Link,
+							{ to: '/newpoll' },
+							'or make a new poll!'
+						)
+					)
+				),
+				_react2.default.createElement(
+					_reactBootstrap.ListGroup,
 					null,
 					polls
 				)
