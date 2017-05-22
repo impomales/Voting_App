@@ -47,6 +47,7 @@ module.exports = function(app) {
 		.put(pollHandler.vote);				//unauth
 
 	// all other routes redirect to home.
+	
 	app.route('/*')
 		.get(function(req, res) {
 			res.redirect('/');

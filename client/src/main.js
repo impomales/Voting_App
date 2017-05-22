@@ -4,6 +4,11 @@ import {BrowserRouter as Router, Route, Link, Switch, Redirect} from 'react-rout
 import $ from 'jquery';
 import ip from 'ip';
 import ObjectID from 'mongodb';
+import {Grid, Row, Col, Clearfix, 
+		Jumbotron, 
+		Navbar, Nav, NavItem,
+		NavDropdown, MenuItem} from 'react-bootstrap';
+import {LinkContainer} from 'react-router-bootstrap';
 
 function NoMatch() {
 	return <h2>No Match Found For This Route.</h2>
@@ -11,20 +16,30 @@ function NoMatch() {
 
 function GuestMenu() {
 	return (
-		<div>
-			<a href='/auth/google'>Sign in with Google.</a>
-		</div>
+		<NavItem eventKey={2} href='/auth/google'>
+			Sign in with Google.
+		</NavItem>
 	);
 };
 
 function UserMenu(props) {
+	var title = 'Welcome, ' + props.user.username;
 	return (
-		<div>
-			<h3>Welcome, {props.user.username}</h3>
-			<Link to='/mypolls'>My Polls</Link>
-			<Link to='/newpoll'>New Poll</Link>
-			<a href='/logout'>Sign out</a>
-		</div>
+		<NavDropdown eventKey={2} title={title} id='user-menu-dropdown'>
+			<LinkContainer to='/mypolls'>
+				<MenuItem eventKey={2.1}>
+					My Polls
+				</MenuItem>
+			</LinkContainer>
+			<LinkContainer to='/newpoll'>
+				<MenuItem eventKey={2.2}>
+					New Poll
+				</MenuItem>
+			</LinkContainer>
+			<MenuItem eventKey={2.3} href='/logout'>
+				Sign out
+			</MenuItem>
+		</NavDropdown>
 	);
 };
 
@@ -47,11 +62,24 @@ class Header extends React.Component {
 
 	render() {
 		return (
-			<div id='header'>
-				<h1><a href='/'>Voting App</a></h1>
-				<a href='/'>Home</a>
-				<Menu user={this.state.user}/>
-			</div>
+			<Navbar collapseOnSelect>
+				<Navbar.Header>
+					<Navbar.Brand>
+						<Link to='/'>Voting App</Link>
+					</Navbar.Brand>
+					<Navbar.Toggle />
+				</Navbar.Header>
+				<Navbar.Collapse>
+					<Nav pullRight>
+						<LinkContainer to='/'>
+							<NavItem eventKey={1}>
+								Home
+							</NavItem>
+						</LinkContainer>
+						<Menu user={this.state.user}/>
+					</Nav>
+				</Navbar.Collapse>
+			</Navbar>
 		);
 	}
 };
@@ -352,7 +380,7 @@ class Polls extends React.Component {
 
 function App() {
 	return (
-		<div id='app'>
+		<Jumbotron>
 			<Header />
 			<Switch>
 				<Route path='/polls' exact component={Polls} />
@@ -362,7 +390,7 @@ function App() {
 				<Redirect from='/' to='/polls' />
 				<Route component={NoMatch} />
 			</Switch>
-		</div>
+		</Jumbotron>
 	);
 }
 

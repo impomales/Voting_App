@@ -4,6 +4,7 @@
   "description": "## _User Stories_",
   "main": "server.js",
   "scripts": {
+    "sass": "sass client/main.scss client/main.css",
     "babel": "browserify client/src/main.js -t babelify --outfile client/bundle.js",
     "start": "node server.js",
     "test": "mocha"
@@ -40,7 +41,9 @@
     "passport": "^0.3.2",
     "passport-google-oauth": "^1.0.0",
     "react": "^15.5.4",
+    "react-bootstrap": "^0.31.0",
     "react-dom": "^15.5.4",
+    "react-router-bootstrap": "^0.24.2",
     "react-router-dom": "^4.1.1"
   }
 }
