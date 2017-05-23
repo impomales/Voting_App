@@ -7,7 +7,8 @@ import ObjectID from 'mongodb';
 import {Grid, Row, Col, Clearfix, PageHeader,
 		Jumbotron, ListGroup, ListGroupItem,
 		Navbar, Nav, NavItem,
-		NavDropdown, MenuItem, Button} from 'react-bootstrap';
+		NavDropdown, MenuItem, Button,
+		FormGroup, FormControl, ControlLabel} from 'react-bootstrap';
 import {LinkContainer} from 'react-router-bootstrap';
 
 function NoMatch() {
@@ -125,16 +126,22 @@ class NewPoll extends React.Component {
 
 	render() {
 		return (
-			<form onSubmit={this.handleSubmit}>
-				<label>
-					Title: 
-					<input type='text' value={this.state.title} onChange={this.handleTitleChange} />
-				</label>
-				<label>
-					Options (seperated by commas):
-					<textarea value={this.state.value} onChange={this.handleChoicesChange}></textarea>
-				</label>
-				<input type='submit' value='Add Poll' />
+			<form onSubmit={this.handleSubmit} className='polls-container'>
+				<FormGroup>
+					<ControlLabel>Title:</ControlLabel>
+					<FormControl 
+						type='text' 
+						value={this.state.title}
+						onChange={this.handleTitleChange} />
+				</FormGroup>
+				<FormGroup>
+					<ControlLabel>Options (seperated by commas):</ControlLabel>
+					<FormControl 
+						componentClass='textarea' 
+						value={this.state.choices} 
+						onChange={this.handleChoicesChange}/>
+				</FormGroup>
+				<Button type='submit'>Add Poll</Button>
 			</form>
 		);
 	}
@@ -215,23 +222,27 @@ class Vote extends React.Component {
 		var choices_count = this.props.poll.choices.length;
 
 		// add choice option shouldn't be available to non logged in users ***
-		var newOption = (this.props.user) ? <option key={choices_count} value={choices_count}> - Add new option - </option> : '';
+		var newOption = (this.props.user) ? <option key={choices_count} value={choices_count}> - Add new option - </option> : null;
 
-		var newChoice = ((this.state.choice === choices_count)  && this.props.user) ?
-				<input type='text' value={this.state.title} onChange={this.handleNewChoice}/> :
-				<div></div>;
+		var newChoice = ((this.state.choice === choices_count)  && this.props.user) ? 
+				<FormGroup><FormControl type='text' value={this.state.title} onChange={this.handleNewChoice} /></FormGroup> :
+				null;
 
 		return (
 			<form onSubmit={this.handleSubmit}>
-				<label>
-					Vote here
-					<select value={this.state.choice} onChange={this.handleChange}>
+				<FormGroup>
+					<ControlLabel>Vote here</ControlLabel>
+					<FormControl 
+						componentClass='select'
+						value={this.state.choice}
+						onChange={this.handleChange}
+						placeholder='select'>
 						{choices}
 						{newOption}
-					</select>
-					{newChoice}
-				</label>
-				<input type='submit' value='Vote' />
+					</FormControl>
+				</FormGroup>
+				{newChoice}
+				<Button type='submit'>Vote</Button>
 			</form>
 		);
 	}
@@ -310,9 +321,24 @@ class Poll extends React.Component {
 		// weird rendering bug going on...temporary solution.
 		if (!this.state.poll) return <div></div>
 		return (
-			<div>
-				<Vote poll={this.state.poll} user={this.state.user} update={this.updateResults}/>
-				<Result results={this.state.poll.choices} />
+			<div className='polls-container'>
+				<Grid>
+					<Row>
+						<Col xs={12}>
+							<PageHeader>
+								<small>{this.state.poll.title}</small>
+							</PageHeader>
+						</Col>
+					</Row>
+					<Row>
+						<Col xs={12} md={6}>
+							<Vote poll={this.state.poll} user={this.state.user} update={this.updateResults}/>
+						</Col>
+						<Col xs={12} md={6}>
+							<Result results={this.state.poll.choices} />
+						</Col>
+					</Row>
+				</Grid>				
 				{/*only show delete component when user_id === poll.created_by
 				careful comparing ids.*/}
 				<Delete poll={this.state.poll} user={this.state.user}/>

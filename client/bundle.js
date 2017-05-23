@@ -208,20 +208,38 @@ var NewPoll = function (_React$Component2) {
 		value: function render() {
 			return _react2.default.createElement(
 				'form',
-				{ onSubmit: this.handleSubmit },
+				{ onSubmit: this.handleSubmit, className: 'polls-container' },
 				_react2.default.createElement(
-					'label',
+					_reactBootstrap.FormGroup,
 					null,
-					'Title:',
-					_react2.default.createElement('input', { type: 'text', value: this.state.title, onChange: this.handleTitleChange })
+					_react2.default.createElement(
+						_reactBootstrap.ControlLabel,
+						null,
+						'Title:'
+					),
+					_react2.default.createElement(_reactBootstrap.FormControl, {
+						type: 'text',
+						value: this.state.title,
+						onChange: this.handleTitleChange })
 				),
 				_react2.default.createElement(
-					'label',
+					_reactBootstrap.FormGroup,
 					null,
-					'Options (seperated by commas):',
-					_react2.default.createElement('textarea', { value: this.state.value, onChange: this.handleChoicesChange })
+					_react2.default.createElement(
+						_reactBootstrap.ControlLabel,
+						null,
+						'Options (seperated by commas):'
+					),
+					_react2.default.createElement(_reactBootstrap.FormControl, {
+						componentClass: 'textarea',
+						value: this.state.choices,
+						onChange: this.handleChoicesChange })
 				),
-				_react2.default.createElement('input', { type: 'submit', value: 'Add Poll' })
+				_react2.default.createElement(
+					_reactBootstrap.Button,
+					{ type: 'submit' },
+					'Add Poll'
+				)
 			);
 		}
 	}]);
@@ -323,26 +341,42 @@ var Vote = function (_React$Component3) {
 				'option',
 				{ key: choices_count, value: choices_count },
 				' - Add new option - '
-			) : '';
+			) : null;
 
-			var newChoice = this.state.choice === choices_count && this.props.user ? _react2.default.createElement('input', { type: 'text', value: this.state.title, onChange: this.handleNewChoice }) : _react2.default.createElement('div', null);
+			var newChoice = this.state.choice === choices_count && this.props.user ? _react2.default.createElement(
+				_reactBootstrap.FormGroup,
+				null,
+				_react2.default.createElement(_reactBootstrap.FormControl, { type: 'text', value: this.state.title, onChange: this.handleNewChoice })
+			) : null;
 
 			return _react2.default.createElement(
 				'form',
 				{ onSubmit: this.handleSubmit },
 				_react2.default.createElement(
-					'label',
+					_reactBootstrap.FormGroup,
 					null,
-					'Vote here',
 					_react2.default.createElement(
-						'select',
-						{ value: this.state.choice, onChange: this.handleChange },
+						_reactBootstrap.ControlLabel,
+						null,
+						'Vote here'
+					),
+					_react2.default.createElement(
+						_reactBootstrap.FormControl,
+						{
+							componentClass: 'select',
+							value: this.state.choice,
+							onChange: this.handleChange,
+							placeholder: 'select' },
 						choices,
 						newOption
-					),
-					newChoice
+					)
 				),
-				_react2.default.createElement('input', { type: 'submit', value: 'Vote' })
+				newChoice,
+				_react2.default.createElement(
+					_reactBootstrap.Button,
+					{ type: 'submit' },
+					'Vote'
+				)
 			);
 		}
 	}]);
@@ -464,9 +498,42 @@ var Poll = function (_React$Component5) {
 			if (!this.state.poll) return _react2.default.createElement('div', null);
 			return _react2.default.createElement(
 				'div',
-				null,
-				_react2.default.createElement(Vote, { poll: this.state.poll, user: this.state.user, update: this.updateResults }),
-				_react2.default.createElement(Result, { results: this.state.poll.choices }),
+				{ className: 'polls-container' },
+				_react2.default.createElement(
+					_reactBootstrap.Grid,
+					null,
+					_react2.default.createElement(
+						_reactBootstrap.Row,
+						null,
+						_react2.default.createElement(
+							_reactBootstrap.Col,
+							{ xs: 12 },
+							_react2.default.createElement(
+								_reactBootstrap.PageHeader,
+								null,
+								_react2.default.createElement(
+									'small',
+									null,
+									this.state.poll.title
+								)
+							)
+						)
+					),
+					_react2.default.createElement(
+						_reactBootstrap.Row,
+						null,
+						_react2.default.createElement(
+							_reactBootstrap.Col,
+							{ xs: 12, md: 6 },
+							_react2.default.createElement(Vote, { poll: this.state.poll, user: this.state.user, update: this.updateResults })
+						),
+						_react2.default.createElement(
+							_reactBootstrap.Col,
+							{ xs: 12, md: 6 },
+							_react2.default.createElement(Result, { results: this.state.poll.choices })
+						)
+					)
+				),
 				_react2.default.createElement(Delete, { poll: this.state.poll, user: this.state.user })
 			);
 		}
