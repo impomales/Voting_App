@@ -11,6 +11,8 @@ import {Grid, Row, Col, Clearfix, PageHeader,
 		FormGroup, FormControl, ControlLabel} from 'react-bootstrap';
 import {LinkContainer} from 'react-router-bootstrap';
 
+import RC2 from 'react-chartjs2';
+
 function NoMatch() {
 	return <h2>No Match Found For This Route.</h2>
 };
@@ -112,10 +114,10 @@ class NewPoll extends React.Component {
 			contentType: 'application/json',
 			data: JSON.stringify(poll),
 			success: function(data) {
-				console.log('poll successfully added');
+				alert('poll successfully added');
 				location.reload();
 			}.bind(this),
-			failure: function(xhr, status, err) {
+			error: function(xhr, status, err) {
 				console.err(this.props.url, err.toString())
 			}.bind(this),
 			complete: function(xhr, status) {
@@ -202,10 +204,10 @@ class Vote extends React.Component {
 				contentType: 'application/json',
 				data: JSON.stringify(vote),
 				success: function(data) {
-					console.log('vote was successful');
+					alert('vote was successful');
 				}.bind(this),
-				failure: function(xhr, status, err) {
-					console.err(this.props.url, status, err.toString());
+				error: function(xhr, status, err) {
+					alert('double voting not allowed');
 				}.bind(this),
 				complete: function(xhr, status) {
 					this.props.update();
@@ -248,23 +250,62 @@ class Vote extends React.Component {
 	}
 }
 
-function ResultList(props) {
-	return <tr><td>{props.title}: {props.count}</td></tr>
-}
+class Result extends React.Component {
+	constructor(props) {
+		super(props);
+	}
 
-function Result(props) {
-	// temporarily show as a table,
-	// later use chart.js or google chart
-	var choices = props.results.map(function(item) {
-			return (
-				<ResultList key={item._id} title={item.title} count={item.count}/>
-			);
+	render() {
+		var labels = this.props.results.map(function(item) {
+			return item.title;
 		});
-	return (
-		<table>
-			<tbody>{choices}</tbody>
-		</table>
-	);
+
+		var data = this.props.results.map(function(item) {
+			return item.count;
+		});
+		// should add a max limit of how many choices allowed in poll.
+		var pieData = {
+			labels: labels,
+	    datasets: [
+	        {
+	            data: data,
+	            backgroundColor: [
+	                '#ff6384',
+	                '#36a2eb',
+	                '#ffce56',
+	                '#1f77b4', 
+	                '#e377c2', 
+	                '#ff7f0e', 
+	                '#2ca02c', 
+	                '#bcbd22', 
+	                '#d62728',
+        			'#17becf', 
+        			'#9467bd', 
+        			'#7f7f7f', 
+        			'#8c564b', 
+        			'#3366cc'
+	            ],
+	            hoverBackgroundColor: [
+	                '#ff6384',
+	                '#36a2eb',
+	                '#ffce56',
+	                '#1f77b4', 
+	                '#e377c2', 
+	                '#ff7f0e', 
+	                '#2ca02c', 
+	                '#bcbd22', 
+	                '#d62728',
+        			'#17becf', 
+        			'#9467bd', 
+        			'#7f7f7f', 
+        			'#8c564b', 
+        			'#3366cc'
+	            ]
+	        }]
+		}
+
+		return <RC2 data={pieData} type='pie' />;
+	}
 }
 
 class Delete extends React.Component {
@@ -281,10 +322,10 @@ class Delete extends React.Component {
 			type: 'DELETE',
 			contentType: 'application/json',
 			success: function(data) {
-				console.log('poll successfully deleted');
+				alert('poll successfully deleted');
 				location.reload();
 			}.bind(this),
-			failure: function(xhr, status, err) {
+			error: function(xhr, status, err) {
 				console.err(this.props.url, status, err.toString());
 			}.bind(this)
 		});
