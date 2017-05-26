@@ -448,7 +448,7 @@ class Polls extends React.Component {
 				<PageHeader>
 					Voting App<br />
 					<small>
-						Select a poll to see the results and vote, <Link to='/newpoll'>or make a new poll!</Link>
+						Select a poll to see the results and vote!
 					</small>
 				</PageHeader>
 				<ListGroup>{polls}</ListGroup>

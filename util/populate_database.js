@@ -4,7 +4,7 @@ var Poll = models.Poll;
 var examplePolls = [
 			{
 				title: 'Pepsi or Coke?',
-				created_by: '59129526737e208688d0af41',	// id of Isaias
+				created_by: '5927b89e495a8845b5365044',	// id of Isaias
 				choices: [
 					{title: 'Pepsi', count: 5},
 					{title: 'Coke', count: 4}
@@ -33,7 +33,7 @@ var examplePolls = [
 			},
 			{
 				title: 'Drink of Choice',
-				created_by: '59129526737e208688d0af41',
+				created_by: '5927b89e495a8845b5365044',
 				choices: [
 					{title: 'Beer', count: 3},
 					{title: 'Wine', count: 4},
